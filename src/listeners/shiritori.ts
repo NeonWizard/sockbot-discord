@@ -33,7 +33,14 @@ export default (client: Client): void => {
       return;
     }
 
-    // 2. No double posting
+    // 2. Letters only
+    if (!/^[a-z]+$/.test(content)) {
+      message.reply("letters. only. not asking again. -4 sock points.");
+      message.react("999086763358298143");
+      return;
+    }
+
+    // 3. No double posting
     if (previousMessage.author.id === message.author.id) {
       message.reply(
         "ermm.... don't respond to yourself.. that's weird. -10 sock points"
@@ -42,7 +49,7 @@ export default (client: Client): void => {
       return;
     }
 
-    // 3. Message starts with last message's last character
+    // 4. Message starts with last message's last character
     if (!content.startsWith(previousContent.at(previousContent.length - 1)!)) {
       message.reply(
         "YOU BROKE THE SHIRITORI CHAIN!!! YOU BROKE IT!!!! -5 SOCK POINTS!!!"
