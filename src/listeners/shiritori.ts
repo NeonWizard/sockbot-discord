@@ -13,6 +13,7 @@ export default (client: Client): void => {
     });
     for (const [ID, msg] of previousMessages) {
       if (msg.author.bot) continue;
+      if (msg.system) continue;
       previousMessage = msg;
       break;
     }
