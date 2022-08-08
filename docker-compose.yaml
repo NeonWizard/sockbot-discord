@@ -1,0 +1,21 @@
+version: "3"
+services:
+  bot:
+    build: .
+    restart: always
+    container_name: shiritori-discordbot
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:latest
+    restart: always
+    container_name: shiritori-postgres
+    ports:
+      - "5001:5432"
+    environment:
+      POSTGRES_USER: "admin"
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: "shiritori"
+    volumes:
+      - ./postgres:/data/postgres

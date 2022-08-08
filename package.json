@@ -3,8 +3,9 @@
     "start": "ts-node src/Bot.ts",
     "build": "yarn tsc",
     "docker:build": "docker build -t averagewizard13/shiritori-discordbot:dev .",
-    "docker:run": "docker run -d --name shiritori-discord-bot discordbots/shiritori-discordbot:dev",
-    "docker:push": "docker push averagewizard13/shiritori-discordbot:dev"
+    "docker:push": "docker push averagewizard13/shiritori-discordbot:dev",
+    "docker:start": "docker compose up",
+    "docker:stop": "docker compose down"
   },
   "dependencies": {
     "discord.js": "^14.1.2",
