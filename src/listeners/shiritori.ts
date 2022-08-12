@@ -1,4 +1,34 @@
-import { Client, Message } from "discord.js";
+import { Client, Message, User } from "discord.js";
+
+// Tests a message for adhering to shiritori rules. Returns a string error
+// on failure, otherwise returns undefined.
+const testMessage = (
+  previousMessage: Message | undefined,
+  message: Message
+): string | undefined => {
+  const content = message.content.toLowerCase();
+  const previousContent = previousMessage?.content.toLowerCase() ?? "";
+
+  // -- Shiritori rules
+  // 1. Only one word and letters only!
+  if (content.includes(" ") || !/^[a-z]+$/.test(content)) {
+    return "post must be one word only and umm also only contain alphabetic characters.";
+  }
+
+  if (previousMessage === undefined) {
+    return;
+  }
+
+  // 2. No self-replying
+  if (previousMessage.author.id === message.author.id) {
+    return "you can't respond to yourself...";
+  }
+
+  // 3. Message starts with last message's last character (CHAIN-BREAKER)
+  if (!content.startsWith(previousContent.at(previousContent.length - 1)!)) {
+    return "get freaking shiritori'd";
+  }
+};
 
 export default (client: Client): void => {
   client.on("messageCreate", async (message: Message) => {
@@ -9,56 +39,31 @@ export default (client: Client): void => {
     let previousMessage;
     const previousMessages = await message.channel.messages.fetch({
       before: message.id,
-      limit: 10,
+      limit: 100,
     });
     for (const [ID, msg] of previousMessages) {
-      if (msg.author.bot) continue;
       if (msg.system) continue;
+      if (msg.author.bot) {
+        if (msg.content.toLowerCase().includes("broke the shiritori chain")) {
+          previousMessage = undefined;
+          break;
+        } else {
+          continue;
+        }
+      }
       previousMessage = msg;
       break;
     }
 
-    if (previousMessage === undefined) {
-      console.error("Couldn't get previous message.");
-      return;
-    }
-
-    const content = message.content.toLowerCase();
-    const previousContent = previousMessage.content.toLowerCase();
-
-    // -- Shiritori rules
-    // 1. Only one word!
-    if (content.includes(" ")) {
-      message.reply("hey.... one word only... -3 sock points...");
-      message.react("999086763358298143");
-      return;
-    }
-
-    // 2. Letters only
-    if (!/^[a-z]+$/.test(content)) {
-      message.reply("letters. only. not asking again. -4 sock points.");
-      message.react("999086763358298143");
-      return;
-    }
-
-    // 3. No double posting
-    if (previousMessage.author.id === message.author.id) {
-      message.reply(
-        "ermm.... don't respond to yourself.. that's weird. -10 sock points"
+    const err = testMessage(previousMessage, message);
+    if (err !== undefined) {
+      await message.react("❌");
+      await message.reply(
+        `<@${message.author.id}> broke the shiritori chain T-T\n${err}`
       );
-      message.react("999086763358298143");
       return;
     }
 
-    // 4. Message starts with last message's last character
-    if (!content.startsWith(previousContent.at(previousContent.length - 1)!)) {
-      message.reply(
-        "YOU BROKE THE SHIRITORI CHAIN!!! YOU BROKE IT!!!! -5 SOCK POINTS!!!"
-      );
-      message.react("999086763358298143");
-      return;
-    }
-
-    message.react("821866361177374743");
+    await message.react("✅");
   });
 };
