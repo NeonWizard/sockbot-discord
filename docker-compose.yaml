@@ -3,12 +3,12 @@ services:
   postgres:
     image: postgres:latest
     restart: always
-    container_name: shiritori-postgres
+    container_name: sockbot-postgres
     ports:
       - "5432:5432"
     environment:
       POSTGRES_USER: "admin"
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: "shiritori"
+      POSTGRES_DB: "sockbot"
     volumes:
       - ./postgres:/data/postgres

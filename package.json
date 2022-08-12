@@ -2,10 +2,10 @@
   "scripts": {
     "start": "ts-node src/Bot.ts",
     "build": "yarn tsc",
-    "docker:build": "docker build -t averagewizard13/shiritori-discordbot:dev .",
-    "docker:push": "docker push averagewizard13/shiritori-discordbot:dev",
-    "docker:start": "docker compose up",
-    "docker:stop": "docker compose down"
+    "docker:build": "docker build -t averagewizard13/sockbot-discord:dev .",
+    "docker:push": "docker push averagewizard13/sockbot-discord:dev",
+    "docker:startdb": "docker compose up",
+    "docker:stopdb": "docker compose down"
   },
   "dependencies": {
     "discord.js": "^14.1.2",
