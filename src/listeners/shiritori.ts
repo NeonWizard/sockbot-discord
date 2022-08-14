@@ -1,4 +1,4 @@
-import { Client, Message, TextChannel } from "discord.js";
+import { Message, TextChannel } from "discord.js";
 import { Bot } from "src/bot";
 
 let history: Message[] = [];
@@ -28,6 +28,7 @@ const testMessage = (
   }
 
   // 3. Message starts with last message's last character (CHAIN-BREAKER)
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   if (!content.startsWith(previousContent.at(previousContent.length - 1)!)) {
     return "get freaking shiritori'd";
   }
@@ -38,6 +39,7 @@ export default (bot: Bot): void => {
 
   client.on("initialized", async () => {
     const shiritoriChannel = (await client.channels.fetch(
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       process.env.SHIRITORI_CHANNEL!
     )) as TextChannel;
 
