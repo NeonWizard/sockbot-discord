@@ -4,23 +4,27 @@
   "description": "",
   "main": "src/index.ts",
   "scripts": {
-    "start": "ts-node .",
+    "start": "DB_USER=sockbot DB_PASSWORD=secret ts-node .",
     "build": "yarn tsc",
     "docker:build": "docker build -t averagewizard13/sockbot-discord:dev .",
     "docker:push": "docker push averagewizard13/sockbot-discord:dev",
-    "start:db": "docker compose up",
+    "db:start": "docker compose up",
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",
-    "fmt": "prettier --write '**/*.{md,css,js,json}'",
-    "fmt:check": "prettier --check '**/*.{md,css,js,json}'"
+    "fmt": "prettier --write '**/*.{md,css,js,ts,json}'",
+    "fmt:check": "prettier --check '**/*.{md,css,js,ts,json}'",
+    "typeorm": "typeorm-ts-node-commonjs"
   },
   "dependencies": {
     "discord.js": "^14.1.2",
     "dotenv": "^16.0.1",
+    "pg": "^8.7.3",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.3.7",
     "winston": "^3.8.1"
   },
   "devDependencies": {
-    "@types/node": "^18.6.4",
+    "@types/node": "^18.7.3",
     "@typescript-eslint/eslint-plugin": "^5.33.0",
     "@typescript-eslint/parser": "^5.33.0",
     "eslint": "^8.22.0",

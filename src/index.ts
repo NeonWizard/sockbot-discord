@@ -1,5 +1,8 @@
 import { Client, GatewayIntentBits } from "discord.js";
 import winston from "winston";
+import "reflect-metadata";
+import { DataSource } from "typeorm";
+import { User } from "./entity/User";
 import * as dotenv from "dotenv";
 dotenv.config();
 
@@ -8,6 +11,11 @@ import { Bot } from "./bot";
 // Validate environment variables
 if (process.env.DISCORD_TOKEN == null) {
   throw new Error("Environment variable 'DISCORD_TOKEN' is missing.");
+}
+if (process.env.DB_USER == null || process.env.DB_PASSWORD == null) {
+  throw new Error(
+    "'DB_USER' and 'DB_PASSWORD' environment variables must be set."
+  );
 }
 
 // Startup the bot
@@ -35,6 +43,27 @@ if (process.env.DISCORD_TOKEN == null) {
   });
   logger.info("Bot is starting...");
 
+  // -- Create TypeORM
+  const dbSource = new DataSource({
+    type: "postgres",
+    host: "localhost",
+    port: 5432,
+    username: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: "sockbot",
+    synchronize: true,
+    logging: false,
+    entities: [User],
+    migrations: [],
+    subscribers: [],
+  });
+  try {
+    await dbSource.initialize();
+  } catch (err) {
+    logger.error("Error creating TypeORM DB link: " + err);
+    return;
+  }
+
   // -- Create DiscordJS client
   const client = new Client({
     intents: [
@@ -45,12 +74,9 @@ if (process.env.DISCORD_TOKEN == null) {
     ],
   });
 
-  // -- Create TypeORM
-  // todo...
-
   // -- Set up generic discord listeners
   client.once("ready", async () => {
-    const bot = new Bot(client, logger);
+    const bot = new Bot(client, dbSource, logger);
     await bot.initialize();
     client.emit("initialized");
     logger.info("Bot is ready!");
@@ -68,5 +94,5 @@ if (process.env.DISCORD_TOKEN == null) {
     logger.error("Error logging in: " + err);
   });
 })().catch((err: Error) => {
-  console.error("Startup error: " + err);
+  throw err;
 });
