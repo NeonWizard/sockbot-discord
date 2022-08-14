@@ -8,7 +8,11 @@
     "build": "yarn tsc",
     "docker:build": "docker build -t averagewizard13/sockbot-discord:dev .",
     "docker:push": "docker push averagewizard13/sockbot-discord:dev",
-    "start:db": "docker compose up"
+    "start:db": "docker compose up",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "fmt": "prettier --write '**/*.{md,css,js,json}'",
+    "fmt:check": "prettier --check '**/*.{md,css,js,json}'"
   },
   "dependencies": {
     "discord.js": "^14.1.2",
@@ -16,6 +20,10 @@
   },
   "devDependencies": {
     "@types/node": "^18.6.4",
+    "@typescript-eslint/eslint-plugin": "^5.33.0",
+    "@typescript-eslint/parser": "^5.33.0",
+    "eslint": "^8.22.0",
+    "prettier": "^2.7.1",
     "ts-node": "^10.9.1",
     "typescript": "^4.7.4"
   }

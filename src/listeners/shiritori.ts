@@ -1,4 +1,4 @@
-import { Client, Message, TextChannel, User } from "discord.js";
+import { Client, Message, TextChannel } from "discord.js";
 
 let history: Message[] = [];
 
