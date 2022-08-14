@@ -1,4 +1,5 @@
 import { Client, Message, TextChannel } from "discord.js";
+import { Bot } from "src/bot";
 
 let history: Message[] = [];
 
@@ -32,7 +33,9 @@ const testMessage = (
   }
 };
 
-export default (client: Client): void => {
+export default (bot: Bot): void => {
+  const client = bot.client;
+
   client.on("initialized", async () => {
     const shiritoriChannel = (await client.channels.fetch(
       process.env.SHIRITORI_CHANNEL!
