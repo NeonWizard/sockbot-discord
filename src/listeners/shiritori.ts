@@ -33,7 +33,7 @@ const testMessage = (
 };
 
 export default (client: Client): void => {
-  client.on("ready", async () => {
+  client.on("initialized", async () => {
     const shiritoriChannel = (await client.channels.fetch(
       process.env.SHIRITORI_CHANNEL!
     )) as TextChannel;

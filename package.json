@@ -1,11 +1,14 @@
 {
+  "name": "sockbot-discord",
+  "version": "0.0.1",
+  "description": "",
+  "main": "src/index.ts",
   "scripts": {
-    "start": "ts-node src/Bot.ts",
+    "start": "ts-node .",
     "build": "yarn tsc",
     "docker:build": "docker build -t averagewizard13/sockbot-discord:dev .",
     "docker:push": "docker push averagewizard13/sockbot-discord:dev",
-    "docker:startdb": "docker compose up",
-    "docker:stopdb": "docker compose down"
+    "start:db": "docker compose up"
   },
   "dependencies": {
     "discord.js": "^14.1.2",

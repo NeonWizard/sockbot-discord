@@ -8,4 +8,4 @@ RUN yarn install
 COPY . .
 RUN yarn tsc
 
-CMD [ "node", "dist/Bot.js" ]
+CMD [ "node", "dist/bot.js" ]
