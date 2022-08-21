@@ -41,7 +41,7 @@
 
 "@discordjs/rest@^1.0.1":
   version "1.0.1"
-  resolved "https://registry.npmjs.org/@discordjs/rest/-/rest-1.0.1.tgz"
+  resolved "https://registry.yarnpkg.com/@discordjs/rest/-/rest-1.0.1.tgz#5c1c379de9eb4170b4964a11ced8add1d5ae808d"
   integrity sha512-w08CTKVzzYYvKxEjXKOs9AdS7KQ1J502TrPfF8eCZ2lF6AfKuMP/32YgDakiwIyYTDjEQS/v0nKLSFcncHRMtg==
   dependencies:
     "@discordjs/collection" "^1.0.1"
