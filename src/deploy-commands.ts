@@ -9,9 +9,6 @@ dotenv.config();
 if (process.env.DISCORD_TOKEN == null) {
   throw new Error("Environment variable 'DISCORD_TOKEN' is missing.");
 }
-// if (process.env.DISCORD_CLIENT_ID == null) {
-//   throw new Error("Environment variable 'DISCORD_CLIENT_ID'is missing.");
-// }
 
 (async () => {
   const commands = [];
