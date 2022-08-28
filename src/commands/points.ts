@@ -13,7 +13,7 @@ export const execute = async (interaction: CommandInteraction) => {
     await interaction.reply("no sock points pee boy. haha");
   } else {
     await interaction.reply(
-      `mmmm you've got ${user.sockpoints.toLocaleString} points. frutata`
+      `mmmm you've got ${user.sockpoints.toLocaleString()} points. frutata`
     );
   }
 };
