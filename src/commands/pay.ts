@@ -26,6 +26,12 @@ export const execute = async (interaction: CommandInteraction) => {
   const victimDJS = interaction.options.getUser("victim", true);
   const victim = await utils.fetchCreateUser(victimDJS.id);
 
+  // make sure not sending to self
+  if (interaction.user.id === victimDJS.id) {
+    await interaction.reply("you're stupid.");
+    return;
+  }
+
   // make sure sender has enough points to send
   if (sender.sockpoints < pointsToTransfer) {
     await interaction.reply(
