@@ -14,7 +14,7 @@ if (process.env.DISCORD_TOKEN == null) {
   const commands = [];
   const commandsPath = path.join(__dirname, "commands");
   const commandFiles = await fs.readdir(commandsPath).then((files) => {
-    return files.filter((file) => file.endsWith(".ts"));
+    return files.filter((file) => file.endsWith(".ts") || file.endsWith(".js"));
   });
 
   for (const file of commandFiles) {

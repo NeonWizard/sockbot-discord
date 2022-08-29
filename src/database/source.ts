@@ -1,5 +1,6 @@
 import { User } from "../entity/User";
 import { DataSource } from "typeorm";
+import { join } from "path";
 
 if (process.env.DB_USER == null || process.env.DB_PASSWORD == null) {
   throw new Error(
@@ -17,6 +18,6 @@ export const PSQLSource = new DataSource({
   synchronize: false,
   logging: false,
   entities: [User],
-  migrations: ["src/database/migrations/*.ts"],
+  migrations: [join(__dirname, "**/migrations/*.{ts,js}")],
   subscribers: [],
 });
