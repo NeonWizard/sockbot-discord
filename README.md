@@ -24,3 +24,10 @@
 | DB_USER       | User for the Postgres DB     |
 | DB_PASS       | Password for the Postgres DB |
 | DISCORD_TOKEN | Discord bot token            |
+
+## Helpful Commands
+
+```bash
+# Generate TypeORM migration
+DB_USER=sockbot DB_PASSWORD=secret yarn typeorm migration:generate -d src/index.ts -p ./src/migrations/init
+```
