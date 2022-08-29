@@ -16,3 +16,11 @@
 2. Build docker image.
 3. Push docker image.
 4. Run docker image via production docker-compose file (found in separate repo).
+
+## Environment Variables
+
+| Key           | Description                  |
+| ------------- | ---------------------------- |
+| DB_USER       | User for the Postgres DB     |
+| DB_PASS       | Password for the Postgres DB |
+| DISCORD_TOKEN | Discord bot token            |
