@@ -1,5 +1,4 @@
 import { CommandInteraction, SlashCommandBuilder } from "discord.js";
-import { User } from "../entity/User";
 import * as utils from "../utils";
 
 export const builder = new SlashCommandBuilder()
