@@ -19,5 +19,6 @@ export const PSQLSource = new DataSource({
   logging: false,
   entities: [User],
   migrations: [join(__dirname, "**/migrations/*.{ts,js}")],
+  migrationsRun: true,
   subscribers: [],
 });
