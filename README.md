@@ -29,5 +29,5 @@
 
 ```bash
 # Generate TypeORM migration
-DB_USER=sockbot DB_PASSWORD=secret yarn typeorm migration:generate -d src/index.ts -p ./src/migrations/init
+DB_USER=sockbot DB_PASSWORD=secret yarn typeorm migration:generate -d src/database/source.ts -p ./src/migrations/init
 ```
