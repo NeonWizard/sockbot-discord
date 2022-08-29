@@ -14,9 +14,9 @@ export const PSQLSource = new DataSource({
   username: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: "sockbot",
-  synchronize: true,
+  synchronize: false,
   logging: false,
   entities: [User],
-  migrations: [],
+  migrations: ["src/database/migrations/*.ts"],
   subscribers: [],
 });

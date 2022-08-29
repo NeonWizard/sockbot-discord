@@ -30,4 +30,8 @@
 ```bash
 # Generate TypeORM migration
 DB_USER=sockbot DB_PASSWORD=secret yarn typeorm migration:generate -d src/database/source.ts -p ./src/migrations/init
+
+# Migrating production
+sudo docker exec -it sockbot-discord sh
+yarn typeorm migration:run -d src/database/source.ts
 ```
