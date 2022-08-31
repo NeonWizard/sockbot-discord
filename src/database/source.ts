@@ -1,6 +1,8 @@
-import { User } from "../entity/User";
 import { DataSource } from "typeorm";
 import { join } from "path";
+import { User } from "../entity/User";
+import { ShiritoriChannel } from "../entity/ShiritoriChannel";
+import { ShiritoriWord } from "../entity/ShiritoriWord";
 
 if (process.env.DB_USER == null || process.env.DB_PASSWORD == null) {
   throw new Error(
@@ -17,7 +19,7 @@ export const PSQLSource = new DataSource({
   database: "sockbot",
   synchronize: false,
   logging: false,
-  entities: [User],
+  entities: [User, ShiritoriChannel, ShiritoriWord],
   migrations: [join(__dirname, "**/migrations/*.{ts,js}")],
   migrationsRun: true,
   subscribers: [],

@@ -74,6 +74,4 @@ if (process.env.DISCORD_TOKEN == null) {
   client.login(process.env.DISCORD_TOKEN).catch((err: Error) => {
     logger.error("Error logging in: " + err);
   });
-})().catch((err: Error) => {
-  throw err;
-});
+})();
