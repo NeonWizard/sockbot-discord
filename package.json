@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@discordjs/rest": "^1.0.1",
+    "canvas": "^2.9.3",
     "discord.js": "^14.1.2",
     "dotenv": "^16.0.1",
     "pg": "^8.7.3",
