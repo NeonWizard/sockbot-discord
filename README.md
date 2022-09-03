@@ -34,4 +34,8 @@ DB_USER=sockbot DB_PASSWORD=secret yarn typeorm migration:generate -d src/databa
 # Migrating production
 sudo docker exec -it sockbot-discord sh
 yarn typeorm migration:run -d src/database/source.ts
+
+# Build and push prod docker instance
+docker build -t averagewizard13/sockbot-discord:latest .
+docker push averagewizard13/sockbot-discord:latest
 ```
