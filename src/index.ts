@@ -25,7 +25,6 @@ if (process.env.DISCORD_TOKEN == null) {
       winston.format.splat(),
       winston.format.json()
     ),
-    defaultMeta: { service: "sockbot-discord" },
     transports: [
       new winston.transports.Console({
         format: winston.format.combine(
