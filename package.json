@@ -6,7 +6,7 @@
   "scripts": {
     "start": "DB_USER=sockbot DB_PASSWORD=secret ts-node .",
     "commands:deploy": "ts-node src/deploy-commands.ts",
-    "build": "rm -rf dist/ && yarn tsc && cp -r src/images dist/images && cp -r src/fonts dist/fonts",
+    "build": "yarn tsc && rm -rf dist/static && cp -r src/static dist/static",
     "docker:build": "docker build -t averagewizard13/sockbot-discord:dev .",
     "docker:push": "docker push averagewizard13/sockbot-discord:dev",
     "db:start": "docker compose up",

@@ -39,7 +39,7 @@ export const DoubleOrNothingCommand: BotCommand = {
       await user.save();
 
       const attachment = new AttachmentBuilder(
-        path.join(__dirname, "../images/cry-man.gif")
+        path.join(__dirname, "../static/images/cry-man.gif")
       );
       await interaction.reply({ files: [attachment] });
     }

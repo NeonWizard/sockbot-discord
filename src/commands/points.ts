@@ -18,7 +18,7 @@ export const PointsCommand: BotCommand = {
     const user = await utils.fetchCreateUser(interaction.user.id);
 
     Canvas.registerFont(
-      path.join(__dirname, "../fonts/nk57-monospace-no-eb.ttf"),
+      path.join(__dirname, "../static/fonts/nk57-monospace-no-eb.ttf"),
       {
         family: "nk57",
       }
@@ -28,7 +28,7 @@ export const PointsCommand: BotCommand = {
     const ctx = canvas.getContext("2d");
 
     const img = await Canvas.loadImage(
-      path.join(__dirname, "../images", "four.jpg")
+      path.join(__dirname, "../static/images", "four.jpg")
     );
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
