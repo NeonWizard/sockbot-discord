@@ -8,7 +8,7 @@ export default (bot: Bot): void => {
 
     const command = bot.commands.get(interaction.commandName);
 
-    if (!command) {
+    if (command === undefined) {
       bot.logger.error("Tried executing a command that does not exist on bot.");
       return;
     }

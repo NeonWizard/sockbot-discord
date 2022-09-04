@@ -1,9 +1,12 @@
 import { CommandInteraction, SlashCommandBuilder } from "discord.js";
+import { BotCommand } from ".";
 
-export const builder = new SlashCommandBuilder()
-  .setName("ping")
-  .setDescription("Replies with 'pong!'");
+export const PingCommand: BotCommand = {
+  builder: new SlashCommandBuilder()
+    .setName("ping")
+    .setDescription("Replies with 'pong!'"),
 
-export const execute = async (interaction: CommandInteraction) => {
-  await interaction.reply("pong!");
+  execute: async (interaction: CommandInteraction) => {
+    await interaction.reply("pong!");
+  },
 };

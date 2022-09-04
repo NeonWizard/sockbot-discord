@@ -1,8 +1,8 @@
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord.js";
-import * as fs from "node:fs/promises";
+import { commands } from "./commands";
+
 import * as dotenv from "dotenv";
-import path from "node:path";
 dotenv.config();
 
 // Validate environment variables
@@ -11,16 +11,9 @@ if (process.env.DISCORD_TOKEN == null) {
 }
 
 (async () => {
-  const commands = [];
-  const commandsPath = path.join(__dirname, "commands");
-  const commandFiles = await fs.readdir(commandsPath).then((files) => {
-    return files.filter((file) => file.endsWith(".ts") || file.endsWith(".js"));
-  });
-
-  for (const file of commandFiles) {
-    const filePath = path.join(commandsPath, file);
-    const { builder } = await import(filePath);
-    commands.push(builder.toJSON());
+  const commandBuilders = [];
+  for (const command of commands) {
+    commandBuilders.push(command.builder.toJSON());
   }
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -36,7 +29,7 @@ if (process.env.DISCORD_TOKEN == null) {
     console.log("Started refreshing application (/) commands.");
 
     await rest.put(Routes.applicationCommands(clientID), {
-      body: commands,
+      body: commandBuilders,
     });
 
     console.log("Successfully reloaded application (/) commands.");
