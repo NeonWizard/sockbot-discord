@@ -24,7 +24,7 @@ export const execute = async (interaction: CommandInteraction) => {
   // }
 
   Canvas.registerFont(
-    path.join(__dirname, "../utils/fonts/nk57-monospace-no-eb.ttf"),
+    path.join(__dirname, "../fonts/nk57-monospace-no-eb.ttf"),
     {
       family: "nk57",
     }
