@@ -1,8 +1,8 @@
 import { DataSource } from "typeorm";
 import { join } from "path";
-import { User } from "../entity/User";
-import { ShiritoriChannel } from "../entity/ShiritoriChannel";
-import { ShiritoriWord } from "../entity/ShiritoriWord";
+import { User } from "./models/User";
+import { ShiritoriChannel } from "./models/ShiritoriChannel";
+import { ShiritoriWord } from "./models/ShiritoriWord";
 
 if (process.env.DB_USER == null || process.env.DB_PASSWORD == null) {
   throw new Error(

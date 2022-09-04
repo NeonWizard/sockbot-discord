@@ -1,7 +1,7 @@
 import { Message } from "discord.js";
-import { ShiritoriChannel } from "../entity/ShiritoriChannel";
+import { ShiritoriChannel } from "../database/models/ShiritoriChannel";
 import { Bot } from "../bot";
-import { ShiritoriWord } from "../entity/ShiritoriWord";
+import { ShiritoriWord } from "../database/models/ShiritoriWord";
 import * as utils from "../utils";
 
 // Tests a message for adhering to shiritori rules. Returns a string error

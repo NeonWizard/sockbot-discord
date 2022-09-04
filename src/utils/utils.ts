@@ -1,4 +1,4 @@
-import { User } from "../entity/User";
+import { User } from "../database/models/User";
 
 // Fetches a user, or creates a new one if doesn't exist
 export const fetchCreateUser = async (discordID: string) => {
