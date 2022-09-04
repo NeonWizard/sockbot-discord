@@ -43,10 +43,6 @@ export const PointsCommand: BotCommand = {
     ctx.strokeText(user.sockpoints.toLocaleString(), 380, 365);
     ctx.fillText(user.sockpoints.toLocaleString(), 380, 365);
 
-    canvas
-      .createPNGStream()
-      .pipe(fs.createWriteStream(path.join(__dirname, "..", "swag.png")));
-
     const attachment = new AttachmentBuilder(canvas.toBuffer("image/png"), {
       name: "points.png",
     });
