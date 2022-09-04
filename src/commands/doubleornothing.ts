@@ -15,6 +15,11 @@ export const builder = new SlashCommandBuilder()
 export const execute = async (interaction: CommandInteraction) => {
   const user = await utils.fetchCreateUser(interaction.user.id);
 
+  if (user.sockpoints < 0) {
+    await interaction.reply("brokeass. try again when you've paid your debt");
+    return;
+  }
+
   if (Math.random() < 0.5) {
     // -- Double
     const oldPoints = user.sockpoints;
