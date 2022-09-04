@@ -27,7 +27,9 @@ export const execute = async (interaction: CommandInteraction) => {
     await user.save();
 
     await interaction.reply(
-      `<@${interaction.user.id}> DOUBLED BABY!! ${oldPoints} -> ${user.sockpoints}`
+      `<@${
+        interaction.user.id
+      }> DOUBLED BABY!! ${oldPoints.toLocaleString()} -> ${user.sockpoints.toLocaleString()}`
     );
   } else {
     // -- Nothing

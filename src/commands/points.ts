@@ -37,7 +37,7 @@ export const execute = async (interaction: CommandInteraction) => {
   ctx.strokeStyle = "black";
   ctx.lineWidth = 7;
   ctx.textAlign = "center";
-  ctx.rotate(0.055);
+  ctx.rotate(0.05);
   ctx.strokeText(user.sockpoints.toLocaleString(), 380, 365);
   ctx.fillText(user.sockpoints.toLocaleString(), 380, 365);
 
