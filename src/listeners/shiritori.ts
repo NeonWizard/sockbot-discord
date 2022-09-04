@@ -2,7 +2,7 @@ import { Message } from "discord.js";
 import { ShiritoriChannel } from "../entity/ShiritoriChannel";
 import { Bot } from "../bot";
 import { ShiritoriWord } from "../entity/ShiritoriWord";
-import { fetchCreateUser } from "../utils";
+import * as utils from "../utils";
 
 // Tests a message for adhering to shiritori rules. Returns a string error
 // on failure, otherwise returns undefined.
@@ -55,7 +55,7 @@ const addWord = async (
   wordEnt.occurrences += 1;
   await wordEnt.save();
 
-  channel.lastUser = await fetchCreateUser(userDiscordID);
+  channel.lastUser = await utils.fetchCreateUser(userDiscordID);
   channel.lastWord = wordEnt;
   channel.chainWords.push(wordEnt);
   channel.chainLength += 1;
@@ -77,23 +77,43 @@ export default (bot: Bot): void => {
     });
     if (channel === null) return;
 
+    const user = await utils.fetchCreateUser(message.author.id);
+
     // Check validity of message
     const err = testMessage(message, channel, channel.lastWord);
     if (err !== undefined) {
-      await message.react("❌");
-      await message.reply(
-        `<@${message.author.id}> broke the shiritori chain T-T\n${err}\nchain was ${channel.chainWords.length} words long when SOMEONE broke it x.x`
-      );
+      const pointPenalty = channel.chainLength * 1;
+
+      // penalize user
+      user.sockpoints -= pointPenalty;
+      await user.save();
+
+      // reset channel
       channel.chainWords = [];
       channel.chainLength = 0;
       channel.lastWord = null;
       channel.lastUser = null;
       await channel.save();
+
+      // send response
+      await message.react("❌");
+      await message.reply(
+        `<@${message.author.id}> broke the shiritori chain T-T\nthey lost: ${pointPenalty} sockpoints\nreason: ${err}\nthe chain was ${channel.chainWords.length} words long when SOMEONE broke it x.x`
+      );
+
       return;
     }
 
     // Add word to chain
     await addWord(channel, message.author.id, message.content.toLowerCase());
+
+    // Calculate point award
+    const pointAward = Math.min(9, Math.floor(channel.chainLength / 3) + 1);
+    user.sockpoints += pointAward;
+    await user.save();
+
+    // Send reactions
     await message.react("✅");
+    await message.react(utils.numberToEmoji(pointAward));
   });
 };
