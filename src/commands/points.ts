@@ -15,14 +15,6 @@ export const builder = new SlashCommandBuilder()
 export const execute = async (interaction: CommandInteraction) => {
   const user = await utils.fetchCreateUser(interaction.user.id);
 
-  // if (user.sockpoints == 0) {
-  //   await interaction.reply("no sock points pee boy. haha");
-  // } else {
-  //   await interaction.reply(
-  //     `mmmm you've got ${user.sockpoints.toLocaleString()} points. frutata`
-  //   );
-  // }
-
   Canvas.registerFont(
     path.join(__dirname, "../fonts/nk57-monospace-no-eb.ttf"),
     {
