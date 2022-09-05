@@ -10,4 +10,7 @@ export class User extends BaseEntity {
 
   @Column({ default: 0 })
   sockpoints!: number;
+
+  @Column({ default: 0 })
+  bankBalance!: number;
 }

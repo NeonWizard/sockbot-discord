@@ -11,10 +11,7 @@ if (process.env.DISCORD_TOKEN == null) {
 }
 
 (async () => {
-  const commandBuilders = [];
-  for (const command of commands) {
-    commandBuilders.push(command.builder.toJSON());
-  }
+  const commandBuilders = commands.map((command) => command.builder.toJSON());
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN!);
