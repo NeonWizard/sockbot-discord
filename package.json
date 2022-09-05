@@ -14,7 +14,10 @@
     "lint:fix": "eslint src/ --fix",
     "fmt": "prettier --write '**/*.{md,css,js,ts,json}'",
     "fmt:check": "prettier --check '**/*.{md,css,js,ts,json}'",
-    "typeorm": "typeorm-ts-node-commonjs"
+    "typeorm": "typeorm-ts-node-commonjs",
+    "migrations:generate": "DB_USER=sockbot DB_PASSWORD=secret yarn typeorm migration:generate -d src/database/source.ts -p ./src/database/migrations/RENAME_ME",
+    "migrations:run": "DB_USER=sockbot DB_PASSWORD=secret yarn typeorm migration:run -d src/database/source.ts",
+    "migrations:down": "DB_USER=sockbot DB_PASSWORD=secret yarn typeorm migration:revert -d src/database/source.ts"
   },
   "dependencies": {
     "@discordjs/rest": "^1.0.1",
