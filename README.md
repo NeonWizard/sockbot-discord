@@ -1,5 +1,9 @@
 # Sockbot Discord Bot
 
+![GitHub Workflow Status (event)](https://img.shields.io/github/workflow/status/NeonWizard/sockbot-discord/Test,%20build%20and%20publish%20application%20to%20Docker%20Hub?event=push)
+![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/NeonWizard/sockbot-discord?label=version)
+[![License: GPL-3.0](https://img.shields.io/github/license/NeonWizard/chatzy.js)](https://opensource.org/licenses/GPL-3.0)
+
 ## Setup
 
 ### Development Environment
