@@ -5,7 +5,6 @@ import {
 } from "discord.js";
 import * as utils from "../utils";
 import * as Canvas from "canvas";
-import * as fs from "fs";
 import path from "path";
 import { BotCommand } from ".";
 
