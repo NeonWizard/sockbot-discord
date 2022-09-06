@@ -23,7 +23,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-        # TODO...
+      - name: Setup Node.JS
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Install yarn dependencies
+        run: yarn install
+
+      - name: Check ESLint
+        run: yarn lint
+
+      - name: Check Prettier formatting
+        run: yarn fmt:check
 
   build:
     name: Build Docker image
