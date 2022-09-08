@@ -4,6 +4,7 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 import path from "path";
+import { ActionType, UserHistory } from "../database/models/UserHistory";
 import { BotCommand } from ".";
 import * as utils from "../utils";
 
@@ -28,6 +29,12 @@ export const DoubleOrNothingCommand: BotCommand = {
       user.sockpoints *= 2;
       await user.save();
 
+      const userHistory = new UserHistory();
+      userHistory.user = user;
+      userHistory.action = ActionType.DOUBLEORNOTHING_WIN;
+      userHistory.value1 = oldPoints;
+      await userHistory.save();
+
       await interaction.reply(
         `<@${
           interaction.user.id
@@ -35,8 +42,15 @@ export const DoubleOrNothingCommand: BotCommand = {
       );
     } else {
       // -- Nothing
+      const oldPoints = user.sockpoints;
       user.sockpoints = 0;
       await user.save();
+
+      const userHistory = new UserHistory();
+      userHistory.user = user;
+      userHistory.action = ActionType.DOUBLEORNOTHING_LOSS;
+      userHistory.value1 = oldPoints;
+      await userHistory.save();
 
       const attachment = new AttachmentBuilder(
         path.join(__dirname, "../static/images/cry-man.gif")

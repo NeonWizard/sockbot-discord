@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added integration to dictionary API to check Shiritori word validity
 - Added bot status to display current version it's running
+- Added UserHistory table to record actions in shiritori, /pay, and /doubleornothing
 
 ### Changed
 

@@ -1,6 +1,7 @@
 import { DataSource } from "typeorm";
 import { join } from "path";
 import { User } from "./models/User";
+import { UserHistory } from "./models/UserHistory";
 import { ShiritoriChannel } from "./models/ShiritoriChannel";
 import { ShiritoriWord } from "./models/ShiritoriWord";
 
@@ -19,7 +20,7 @@ export const PSQLSource = new DataSource({
   database: "sockbot",
   synchronize: false,
   logging: false,
-  entities: [User, ShiritoriChannel, ShiritoriWord],
+  entities: [User, UserHistory, ShiritoriChannel, ShiritoriWord],
   migrations: [join(__dirname, "**/migrations/*.{ts,js}")],
   migrationsRun: true,
   subscribers: [],

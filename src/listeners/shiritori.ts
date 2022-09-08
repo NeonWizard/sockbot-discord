@@ -3,6 +3,7 @@ import { ShiritoriChannel } from "../database/models/ShiritoriChannel";
 import { Bot } from "../bot";
 import { ShiritoriWord } from "../database/models/ShiritoriWord";
 import * as utils from "../utils";
+import { ActionType, UserHistory } from "../database/models/UserHistory";
 
 // Tests a message for adhering to shiritori rules. Returns a string error
 // on failure, otherwise returns undefined.
@@ -100,6 +101,13 @@ export default (bot: Bot): void => {
       channel.lastUser = null;
       await channel.save();
 
+      // log failure in UserHistory table
+      const userHistory = new UserHistory();
+      userHistory.user = user;
+      userHistory.action = ActionType.SHIRITORI_FAIL;
+      userHistory.value1 = pointPenalty;
+      await userHistory.save();
+
       // send response
       await message.react("❌");
       await message.reply(
@@ -131,6 +139,13 @@ export default (bot: Bot): void => {
 
     user.sockpoints += pointAward;
     await user.save();
+
+    // -- Record shiritori action in UserHistory
+    const userHistory = new UserHistory();
+    userHistory.user = user;
+    userHistory.action = ActionType.SHIRITORI;
+    userHistory.value1 = pointAward;
+    await userHistory.save();
 
     // -- Send reactions
     await message.react(utils.numberToEmoji(pointAward));

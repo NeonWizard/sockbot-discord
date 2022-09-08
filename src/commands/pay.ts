@@ -1,4 +1,5 @@
 import { CommandInteraction, SlashCommandBuilder } from "discord.js";
+import { ActionType, UserHistory } from "../database/models/UserHistory";
 import { BotCommand } from ".";
 import * as utils from "../utils";
 
@@ -55,6 +56,14 @@ export const PayCommand: BotCommand = {
     victim.sockpoints += pointsToTransfer;
     await sender.save();
     await victim.save();
+
+    // log user history
+    const userHistory = new UserHistory();
+    userHistory.user = sender;
+    userHistory.targetUser = victim;
+    userHistory.action = ActionType.PAY;
+    userHistory.value1 = pointsToTransfer;
+    await userHistory.save();
 
     await interaction.reply(
       `you transfererd ${pointsToTransfer} sockpoints to <@${victimDJS.id}>!!`
