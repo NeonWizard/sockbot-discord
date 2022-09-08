@@ -34,48 +34,6 @@ export const BankCommand: BotCommand = {
 
   execute: async (interaction: CommandInteraction) => {
     await interaction.reply("change catsock's role icon");
-
-    if (!interaction.isChatInputCommand()) return;
-
-    const user = await utils.fetchCreateUser(interaction.user.id);
-
-    // -- Bank balance
-    if (interaction.options.getSubcommand() === "balance") {
-      await interaction.reply(`${user.bankBalance} sockpoints in your bank`);
-      return;
-    }
-
-    const amount = interaction.options.getInteger("points", true);
-    if (amount <= 0) {
-      await interaction.reply("stares at you");
-      return;
-    }
-
-    // -- Depositing
-    if (interaction.options.getSubcommand() === "deposit") {
-      if (amount > user.sockpoints) {
-        await interaction.reply("you can't afford that, brokeass");
-        return;
-      }
-      user.sockpoints -= amount;
-      user.bankBalance += amount;
-      await user.save();
-      await interaction.reply(
-        `${amount} sockpoints deposited in your bank.\nBank: ${user.bankBalance}\nWallet: ${user.sockpoints}`
-      );
-    }
-    // -- Withdrawing
-    else if (interaction.options.getSubcommand() === "withdraw") {
-      if (amount > user.bankBalance) {
-        await interaction.reply("not enough money in your bank bozo");
-        return;
-      }
-      user.sockpoints += amount;
-      user.bankBalance -= amount;
-      await user.save();
-      await interaction.reply(
-        `${amount} sockpoints withdrawn from your bank.\nBank: ${user.bankBalance}\nWallet: ${user.sockpoints}`
-      );
-    }
+    return;
   },
 };

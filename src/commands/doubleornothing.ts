@@ -17,6 +17,7 @@ export const DoubleOrNothingCommand: BotCommand = {
 
   execute: async (interaction: CommandInteraction) => {
     await interaction.reply("change catsock's role icon");
+    return;
 
     const user = await utils.fetchCreateUser(interaction.user.id);
 
