@@ -8,12 +8,14 @@ import commandsListener from "./listeners/commands";
 
 import { BotCommand, commands } from "./commands";
 
+import { VERSION } from "./version";
+
 export class Bot {
   public readonly client: Client;
   public readonly logger: Logger;
   public readonly db: DataSource;
   public readonly commands: Collection<string, BotCommand>;
-  public readonly version: string = "v1.0.0-alpha.2";
+  // public readonly version: string = "v1.0.0-alpha.2";
 
   constructor(client: Client, dbSource: DataSource, logger: Logger) {
     this.client = client;
@@ -43,7 +45,7 @@ export class Bot {
 
   public async setVersionStatus(): Promise<void> {
     this.client.user?.setPresence({
-      activities: [{ name: this.version }],
+      activities: [{ name: `v${VERSION}` }],
     });
     process.env.npm_package_version;
   }
