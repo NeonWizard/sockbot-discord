@@ -113,13 +113,14 @@ export default (bot: Bot): void => {
     // chain length bonus points
     pointAward += Math.min(9, Math.floor(channel.chainLength / 3) + 1);
 
-    // word validity bonus points
+    // word validity penalty
     const isValidWord = await utils.checkWordValidity(
       message.content.toLowerCase()
     );
     if (isValidWord) {
-      pointAward += 5;
       await message.react("📖");
+    } else {
+      pointAward = Math.min(0, pointAward - 5);
     }
 
     user.sockpoints += pointAward;

@@ -3,7 +3,6 @@ import winston from "winston";
 import "reflect-metadata";
 import { PSQLSource } from "./database/source";
 import * as dotenv from "dotenv";
-import * as utils from "./utils";
 dotenv.config();
 
 import { Bot } from "./bot";
