@@ -19,16 +19,21 @@ const testMessage = (
     return "post must be one word only and umm also only contain alphabetic characters.";
   }
 
+  // 2. Word must be at least two characters
+  if (content.length <= 1) {
+    return "word must be at least two characters. sorz";
+  }
+
   if (lastWord === null || channel.lastUser === null) {
     return;
   }
 
-  // 2. No self-replying
+  // 3. No self-replying
   if (channel.lastUser.discordID === message.author.id) {
     return "you can't respond to yourself...";
   }
 
-  // 3. Message starts with last message's last character (CHAIN-BREAKER)
+  // 4. Message starts with last message's last character (CHAIN-BREAKER)
   const expectedStartLetter = lastWord.word.at(lastWord.word.length - 1) ?? "";
   if (!content.startsWith(expectedStartLetter)) {
     return "get freaking shiritori'd";

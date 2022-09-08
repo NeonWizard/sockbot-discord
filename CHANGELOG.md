@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
 - Added integration to dictionary API to check Shiritori word validity
+
+### Changed
+
+- Shiritori word must now be at least two letters
 
 <!-- ## [1.0.0] - 2017-06-20
 
