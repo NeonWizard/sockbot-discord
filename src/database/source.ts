@@ -5,6 +5,9 @@ import { UserHistory } from "./models/UserHistory";
 import { ShiritoriChannel } from "./models/ShiritoriChannel";
 import { ShiritoriWord } from "./models/ShiritoriWord";
 
+import * as dotenv from "dotenv";
+dotenv.config();
+
 if (process.env.DB_USER == null || process.env.DB_PASSWORD == null) {
   throw new Error(
     "'DB_USER' and 'DB_PASSWORD' environment variables must be set."
