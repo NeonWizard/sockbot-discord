@@ -106,6 +106,7 @@ export default (bot: Bot): void => {
 
     // -- Add word to chain
     await addWord(channel, message.author.id, message.content.toLowerCase());
+    await message.react("✅");
 
     // -- Calculate point award
     let pointAward = 0;
@@ -127,7 +128,6 @@ export default (bot: Bot): void => {
     await user.save();
 
     // -- Send reactions
-    await message.react("✅");
     await message.react(utils.numberToEmoji(pointAward));
   });
 };
