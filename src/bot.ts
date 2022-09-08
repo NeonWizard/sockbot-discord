@@ -13,6 +13,7 @@ export class Bot {
   public readonly logger: Logger;
   public readonly db: DataSource;
   public readonly commands: Collection<string, BotCommand>;
+  public readonly version: string = "v1.0.0-alpha.1";
 
   constructor(client: Client, dbSource: DataSource, logger: Logger) {
     this.client = client;
@@ -42,7 +43,7 @@ export class Bot {
 
   public async setVersionStatus(): Promise<void> {
     this.client.user?.setPresence({
-      activities: [{ name: `v${process.env.npm_package_version}` }],
+      activities: [{ name: this.version }],
     });
     process.env.npm_package_version;
   }
