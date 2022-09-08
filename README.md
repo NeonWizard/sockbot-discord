@@ -43,4 +43,8 @@ yarn typeorm migration:run -d src/database/source.ts
 # Build and push docker instance
 docker build -t averagewizard13/sockbot-discord:dev .
 docker push averagewizard13/sockbot-discord:dev
+
+# Bump yarn version
+yarn version
+yarn version --prerelease --preid=alpha
 ```
