@@ -13,7 +13,7 @@ export class Bot {
   public readonly logger: Logger;
   public readonly db: DataSource;
   public readonly commands: Collection<string, BotCommand>;
-  public readonly version: string = "v1.0.0-alpha.1";
+  public readonly version: string = "v1.0.0-alpha.2";
 
   constructor(client: Client, dbSource: DataSource, logger: Logger) {
     this.client = client;
