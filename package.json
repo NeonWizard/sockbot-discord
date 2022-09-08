@@ -9,6 +9,7 @@
     "prebuild": "rm -rf dist/static",
     "build": "yarn tsc && cp -r src/static dist/static",
     "postbuild": "node -p \"'exports.VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" >> dist/version.js",
+    "postversion": "git push && git push --tags",
     "docker:build": "docker build -t averagewizard13/sockbot-discord:dev .",
     "docker:push": "docker push averagewizard13/sockbot-discord:dev",
     "db:start": "docker compose up",
