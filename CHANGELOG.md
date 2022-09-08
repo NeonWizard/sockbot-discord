@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added integration to dictionary API to check Shiritori word validity
+- Added bot status to display current version it's running
 
 ### Changed
 

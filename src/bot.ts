@@ -23,6 +23,7 @@ export class Bot {
 
   public async initialize(): Promise<void> {
     await this.loadCommands();
+    await this.setVersionStatus();
 
     // TODO: cmon man it's obvious
     // hint: modularize
@@ -37,5 +38,12 @@ export class Bot {
     for (const command of commands) {
       this.commands.set(command.builder.name, command);
     }
+  }
+
+  public async setVersionStatus(): Promise<void> {
+    this.client.user?.setPresence({
+      activities: [{ name: `v${process.env.npm_package_version}` }],
+    });
+    process.env.npm_package_version;
   }
 }
