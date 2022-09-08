@@ -121,7 +121,7 @@ export default (bot: Bot): void => {
     if (isValidWord) {
       await message.react("📖");
     } else {
-      pointAward = Math.min(0, pointAward - 5);
+      pointAward = Math.max(0, pointAward - 5);
     }
 
     user.sockpoints += pointAward;
