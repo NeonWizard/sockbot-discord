@@ -14,6 +14,7 @@ export const PointsCommand: BotCommand = {
     .setDescription("see urrrr sock points! :0"),
 
   execute: async (interaction: CommandInteraction) => {
+    await interaction.reply("change catsock's role icon");
     const user = await utils.fetchCreateUser(interaction.user.id);
 
     Canvas.registerFont(

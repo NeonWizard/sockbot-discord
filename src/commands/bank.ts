@@ -33,6 +33,8 @@ export const BankCommand: BotCommand = {
     ),
 
   execute: async (interaction: CommandInteraction) => {
+    await interaction.reply("change catsock's role icon");
+
     if (!interaction.isChatInputCommand()) return;
 
     const user = await utils.fetchCreateUser(interaction.user.id);

@@ -21,6 +21,8 @@ export const PayCommand: BotCommand = {
     ),
 
   execute: async (interaction: CommandInteraction) => {
+    await interaction.reply("change catsock's role icon");
+
     if (!interaction.isChatInputCommand()) return;
 
     const sender = await utils.fetchCreateUser(interaction.user.id);
