@@ -1,4 +1,5 @@
 import { User } from "../database/models/User";
+import fetch from "node-fetch";
 
 // Fetches a user, or creates a new one if doesn't exist
 export const fetchCreateUser = async (discordID: string) => {
@@ -27,4 +28,21 @@ export const numberToEmoji = (number: number) => {
     .replace(/7/g, "7️⃣")
     .replace(/8/g, "8️⃣")
     .replace(/9/g, "9️⃣");
+};
+
+// Checks Dictionary API to check if word is valid
+export const checkWordValidity = async (word: string): Promise<boolean> => {
+  const res = await fetch(
+    `https://www.dictionaryapi.com/api/v3/references/collegiate/json/${word}?key=${process.env.DICTIONARY_API_KEY}`,
+    {
+      method: "get",
+    }
+  );
+  const data = await res.json();
+  for (const entry of data) {
+    if (entry?.meta?.id) {
+      return true;
+    }
+  }
+  return false;
 };

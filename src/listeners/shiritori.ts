@@ -68,10 +68,10 @@ export default (bot: Bot): void => {
   const client = bot.client;
 
   client.on("messageCreate", async (message: Message) => {
-    // Bots can't participate in Shiritori. T-T
+    // -- Bots can't participate in Shiritori. T-T
     if (message.author.bot) return;
 
-    // Find ShiritoriChannel in database
+    // -- Find ShiritoriChannel in database
     const channel = await ShiritoriChannel.findOneBy({
       channelID: message.channelId,
     });
@@ -79,10 +79,10 @@ export default (bot: Bot): void => {
 
     const user = await utils.fetchCreateUser(message.author.id);
 
-    // Check validity of message
+    // -- Check validity of message
     const err = testMessage(message, channel, channel.lastWord);
     if (err !== undefined) {
-      const pointPenalty = channel.chainLength * 1;
+      const pointPenalty = Math.max(10, channel.chainLength * 1);
 
       // penalize user
       user.sockpoints -= pointPenalty;
@@ -104,15 +104,28 @@ export default (bot: Bot): void => {
       return;
     }
 
-    // Add word to chain
+    // -- Add word to chain
     await addWord(channel, message.author.id, message.content.toLowerCase());
 
-    // Calculate point award
-    const pointAward = Math.min(9, Math.floor(channel.chainLength / 3) + 1);
+    // -- Calculate point award
+    let pointAward = 0;
+
+    // chain length bonus points
+    pointAward += Math.min(9, Math.floor(channel.chainLength / 3) + 1);
+
+    // word validity bonus points
+    const isValidWord = await utils.checkWordValidity(
+      message.content.toLowerCase()
+    );
+    if (isValidWord) {
+      pointAward += 5;
+      await message.react("📖");
+    }
+
     user.sockpoints += pointAward;
     await user.save();
 
-    // Send reactions
+    // -- Send reactions
     await message.react("✅");
     await message.react(utils.numberToEmoji(pointAward));
   });

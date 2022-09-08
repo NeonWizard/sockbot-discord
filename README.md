@@ -23,11 +23,13 @@
 
 ## Environment Variables
 
-| Key           | Description                  |
-| ------------- | ---------------------------- |
-| DB_USER       | User for the Postgres DB     |
-| DB_PASS       | Password for the Postgres DB |
-| DISCORD_TOKEN | Discord bot token            |
+| Key                       | Description                                        |
+| ------------------------- | -------------------------------------------------- |
+| DB_USER                   | User for the Postgres DB                           |
+| DB_PASS                   | Password for the Postgres DB                       |
+| DISCORD_TOKEN             | Discord bot token                                  |
+| DICTIONARY_API_KEY        | API key for Merriam-Webster Dictionary API         |
+| DICTIONARY_API_KEY_SCHOOL | API key for Merriam-Webstier School Dictionary API |
 
 ## Helpful Commands
 
