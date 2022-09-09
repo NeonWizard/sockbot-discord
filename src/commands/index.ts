@@ -9,6 +9,7 @@ import { DoubleOrNothingCommand } from "./doubleornothing";
 import { PayCommand } from "./pay";
 import { PingCommand } from "./ping";
 import { PointsCommand } from "./points";
+import { LeaderboardCommand } from "./leaderboard";
 
 // TODO: Move to interfaces/ folder
 export interface BotCommand {
@@ -21,6 +22,7 @@ export interface BotCommand {
 export const commands = [
   BankCommand,
   DoubleOrNothingCommand,
+  LeaderboardCommand,
   PayCommand,
   PingCommand,
   PointsCommand,
