@@ -89,6 +89,7 @@ export default (bot: Bot): void => {
     const err = testMessage(message, channel, channel.lastWord);
     if (err !== undefined) {
       const pointPenalty = Math.max(10, channel.chainLength * 1);
+      const brokenLength = channel.chainLength;
 
       // penalize user
       user.sockpoints -= pointPenalty;
@@ -111,7 +112,7 @@ export default (bot: Bot): void => {
       // send response
       await message.react("❌");
       await message.reply(
-        `<@${message.author.id}> broke the shiritori chain T-T\nthey lost: ${pointPenalty} sockpoints\nreason: ${err}\nthe chain was ${channel.chainWords.length} words long when SOMEONE broke it x.x`
+        `<@${message.author.id}> broke the shiritori chain T-T\nthey lost: ${pointPenalty} sockpoints\nreason: ${err}\nthe chain was ${brokenLength} words long when SOMEONE broke it x.x`
       );
 
       return;
