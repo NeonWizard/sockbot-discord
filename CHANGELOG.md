@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Reduced unique shiritori word bonus from 50 points to 30 points
+
 ### Fixed
 
 - Fixed unique shiritori word bonus always being applied

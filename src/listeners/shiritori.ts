@@ -138,7 +138,7 @@ export default (bot: Bot): void => {
     if (isValidWord) {
       await message.react("📖");
       if (wordIsNew) {
-        pointAward = 50;
+        pointAward = 30;
       }
     } else {
       // -5 point penalty for invalid words
@@ -156,8 +156,8 @@ export default (bot: Bot): void => {
     await userHistory.save();
 
     // -- Send reactions
-    if (pointAward === 50) {
-      await message.react("5️⃣");
+    if (pointAward === 30) {
+      await message.react("3️⃣");
       await message.react("0️⃣");
       await message.react("⭐");
     } else {
