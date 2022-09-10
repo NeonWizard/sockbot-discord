@@ -119,6 +119,11 @@ export default (bot: Bot): void => {
     }
 
     // -- Add word to chain
+    const wordIsNew =
+      (await ShiritoriWord.findOneBy({
+        word: message.content.toLowerCase(),
+        channel: { id: channel.id },
+      })) === null;
     await addWord(channel, message.author.id, message.content.toLowerCase());
     await message.react("✅");
 
@@ -132,7 +137,7 @@ export default (bot: Bot): void => {
     const isValidWord = await utils.checkWordValidity(message.content.toLowerCase());
     if (isValidWord) {
       await message.react("📖");
-      if ((await ShiritoriWord.findOneBy({ word: message.content.toLowerCase() })) !== null) {
+      if (wordIsNew) {
         pointAward = 50;
       }
     } else {
