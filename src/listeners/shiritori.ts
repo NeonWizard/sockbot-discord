@@ -128,13 +128,15 @@ export default (bot: Bot): void => {
     // chain length bonus points
     pointAward += Math.min(9, Math.floor(channel.chainLength / 3) + 1);
 
-    // word validity penalty
-    const isValidWord = await utils.checkWordValidity(
-      message.content.toLowerCase()
-    );
+    // word validity
+    const isValidWord = await utils.checkWordValidity(message.content.toLowerCase());
     if (isValidWord) {
       await message.react("📖");
+      if ((await ShiritoriWord.findOneBy({ word: message.content.toLowerCase() })) !== null) {
+        pointAward = 50;
+      }
     } else {
+      // -5 point penalty for invalid words
       pointAward = Math.max(0, pointAward - 5);
     }
 
@@ -149,6 +151,12 @@ export default (bot: Bot): void => {
     await userHistory.save();
 
     // -- Send reactions
-    await message.react(utils.numberToEmoji(pointAward));
+    if (pointAward === 50) {
+      await message.react("5️⃣");
+      await message.react("0️⃣");
+      await message.react("⭐");
+    } else {
+      await message.react(utils.numberToEmoji(pointAward));
+    }
   });
 };
