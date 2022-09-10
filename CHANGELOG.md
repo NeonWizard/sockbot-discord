@@ -7,31 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2022-09-09
+
 ### Added
 
 - Added integration to dictionary API to check Shiritori word validity
 - Added bot status to display current version it's running
 - Added UserHistory table to record actions in shiritori, /pay, and /doubleornothing
+- Added /leaderboard command
+- Added /stats command
+- Added 50 point reward for valid shiritori words that haven't been said before
 
 ### Changed
 
 - Shiritori word must now be at least two letters
-
-<!-- ## [1.0.0] - 2017-06-20
-
-### Added
-
-- New visual identity by [@tylerfortune8](https://github.com/tylerfortune8).
-- Version navigation.
-
-### Changed
-
-- Start using "changelog" over "change log" since it's the common usage.
-
-### Removed
-
-- Section about "changelog" vs "CHANGELOG".
-
-### Fixed
-
-- Swag -->
