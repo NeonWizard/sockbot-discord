@@ -1,8 +1,4 @@
-import {
-  AttachmentBuilder,
-  CommandInteraction,
-  SlashCommandBuilder,
-} from "discord.js";
+import { AttachmentBuilder, CommandInteraction, SlashCommandBuilder } from "discord.js";
 import path from "path";
 import { ActionType, UserHistory } from "../database/models/UserHistory";
 import { BotCommand } from ".";
@@ -11,9 +7,7 @@ import * as utils from "../utils";
 export const DoubleOrNothingCommand: BotCommand = {
   builder: new SlashCommandBuilder()
     .setName("doubleornothing")
-    .setDescription(
-      "50% chance to double your points, 50% chance to lose your points"
-    ),
+    .setDescription("50% chance to double your points, 50% chance to lose your points"),
 
   execute: async (interaction: CommandInteraction) => {
     const user = await utils.fetchCreateUser(interaction.user.id);

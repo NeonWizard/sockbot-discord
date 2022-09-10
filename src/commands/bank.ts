@@ -11,10 +11,7 @@ export const BankCommand: BotCommand = {
         .setName("deposit")
         .setDescription("Deposit sockpoints")
         .addIntegerOption((option) =>
-          option
-            .setName("points")
-            .setDescription("How many points to deposit.")
-            .setRequired(true)
+          option.setName("points").setDescription("How many points to deposit.").setRequired(true)
         )
     )
     .addSubcommand((subcommand) =>
@@ -22,10 +19,7 @@ export const BankCommand: BotCommand = {
         .setName("withdraw")
         .setDescription("Withdraw sockpoints")
         .addIntegerOption((option) =>
-          option
-            .setName("points")
-            .setDescription("How many points to withdraw.")
-            .setRequired(true)
+          option.setName("points").setDescription("How many points to withdraw.").setRequired(true)
         )
     )
     .addSubcommand((subcommand) =>

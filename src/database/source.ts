@@ -9,9 +9,7 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 if (process.env.DB_USER == null || process.env.DB_PASSWORD == null) {
-  throw new Error(
-    "'DB_USER' and 'DB_PASSWORD' environment variables must be set."
-  );
+  throw new Error("'DB_USER' and 'DB_PASSWORD' environment variables must be set.");
 }
 
 export const PSQLSource = new DataSource({

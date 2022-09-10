@@ -29,10 +29,11 @@ if (process.env.DICTIONARY_API_KEY == null) {
       winston.format.json()
     ),
     transports: [
+      // prettier-ignore
       new winston.transports.Console({
         format: winston.format.combine(
           winston.format.colorize(),
-          winston.format.simple()
+          winston.format.simple(),
         ),
       }),
     ],

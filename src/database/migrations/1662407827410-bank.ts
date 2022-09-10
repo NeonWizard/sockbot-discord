@@ -12,9 +12,7 @@ export class bank1662407827410 implements MigrationInterface {
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     // Transfer bank funds back into wallet
-    await queryRunner.query(
-      `UPDATE "user" SET "sockpoints"="sockpoints"+"bankBalance"`
-    );
+    await queryRunner.query(`UPDATE "user" SET "sockpoints"="sockpoints"+"bankBalance"`);
 
     // Delete bank column
     await queryRunner.query(`ALTER TABLE "user" DROP COLUMN "bankBalance"`);

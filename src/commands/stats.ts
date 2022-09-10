@@ -1,7 +1,6 @@
 import { CommandInteraction, SlashCommandBuilder } from "discord.js";
 import { BotCommand } from ".";
 import { UserHistory } from "../database/models/UserHistory";
-import { User } from "../database/models/User";
 import * as utils from "../utils";
 
 type Stats = {
@@ -26,6 +25,7 @@ type Stats = {
 };
 
 export const StatsCommand: BotCommand = {
+  // prettier-ignore
   builder: new SlashCommandBuilder()
     .setName("stats")
     .setDescription("your statistics"),
@@ -95,9 +95,7 @@ export const StatsCommand: BotCommand = {
     response.push(`Points Earned: ${stats.ShiritoriStats.pointsEarned}`);
     response.push(`# of good words: ${stats.ShiritoriStats.numberOfGoodWords}`);
     response.push(`Points Lost: ${stats.ShiritoriStats.pointsLost}`);
-    response.push(
-      `Chain breakers: ${stats.ShiritoriStats.numberOfChainBreakers}`
-    );
+    response.push(`Chain breakers: ${stats.ShiritoriStats.numberOfChainBreakers}`);
 
     interaction.reply(response.join("\n"));
   },

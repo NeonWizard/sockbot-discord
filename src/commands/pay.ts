@@ -8,16 +8,10 @@ export const PayCommand: BotCommand = {
     .setName("pay")
     .setDescription("give someone some of urrrr sock points! :D")
     .addUserOption((option) =>
-      option
-        .setName("victim")
-        .setDescription("the victim to pay money to! silly")
-        .setRequired(true)
+      option.setName("victim").setDescription("the victim to pay money to! silly").setRequired(true)
     )
     .addIntegerOption((option) =>
-      option
-        .setName("points")
-        .setDescription("amount of sooockpoints to send")
-        .setRequired(true)
+      option.setName("points").setDescription("amount of sooockpoints to send").setRequired(true)
     ),
 
   execute: async (interaction: CommandInteraction) => {
@@ -37,9 +31,7 @@ export const PayCommand: BotCommand = {
 
     // make sure sender has enough points to send
     if (sender.sockpoints < pointsToTransfer) {
-      await interaction.reply(
-        "you don't have enough points for that.... i'm watching you...."
-      );
+      await interaction.reply("you don't have enough points for that.... i'm watching you....");
       return;
     }
 
