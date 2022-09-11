@@ -9,16 +9,24 @@ export const LeaderboardCommand: BotCommand = {
     .setDescription("it IS a competition"),
 
   execute: async (interaction: CommandInteraction) => {
-    const topUsers = await User.find({
-      order: { sockpoints: "DESC" },
-      take: 5,
-    });
+    // prettier-ignore
+    const topUsers = await User.createQueryBuilder("leaderboard")
+      .select()
+      .addSelect("sockpoints + \"bankBalance\"", "total_points")
+      .orderBy("total_points", "DESC")
+      .limit(5)
+      .getMany();
 
     // dont look at me
     interaction.reply(
       "Top 5 richest people\n\n" +
         topUsers
-          .map((x, i) => `${i + 1}. <@${x.discordID}>\n${x.sockpoints.toLocaleString()} sockpoints`)
+          .map(
+            (x, i) =>
+              `${i + 1}. <@${x.discordID}>\n${(
+                x.sockpoints + x.bankBalance
+              ).toLocaleString()} sockpoints`
+          )
           .join("\n\n")
     );
   },
