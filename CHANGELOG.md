@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added a 4% daily compounding bank interest
+
 ### Changed
 
 - Shiritori word uniqueness is now determined by the inflection root (for example, 'running' and 'run' are considered the same)
