@@ -1,4 +1,4 @@
-import { CommandInteraction, SlashCommandBuilder } from "discord.js";
+import { AllowedMentionsTypes, CommandInteraction, SlashCommandBuilder } from "discord.js";
 import { BotCommand } from ".";
 import { User } from "../database/models/User";
 
@@ -18,8 +18,9 @@ export const LeaderboardCommand: BotCommand = {
       .getMany();
 
     // dont look at me
-    interaction.reply(
-      "Top 5 richest people\n\n" +
+    interaction.reply({
+      content:
+        "Top 5 richest people\n\n" +
         topUsers
           .map(
             (x, i) =>
@@ -27,7 +28,8 @@ export const LeaderboardCommand: BotCommand = {
                 x.sockpoints + x.bankBalance
               ).toLocaleString()} sockpoints`
           )
-          .join("\n\n")
-    );
+          .join("\n\n"),
+      allowedMentions: { users: [] },
+    });
   },
 };
