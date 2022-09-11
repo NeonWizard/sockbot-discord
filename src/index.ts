@@ -11,8 +11,8 @@ import { Bot } from "./bot";
 if (process.env.DISCORD_TOKEN == null) {
   throw new Error("Environment variable 'DISCORD_TOKEN' is missing.");
 }
-if (process.env.DICTIONARY_API_KEY == null) {
-  throw new Error("Environment variable 'DICTIONARY_API_KEY' is missing");
+if (process.env.DICTIONARY_APP_ID == null || process.env.DICTIONARY_APP_KEY == null) {
+  throw new Error("Environment variable 'DICTIONARY_APP_ID' or 'DICTIONARY_APP_KEY' is missing");
 }
 
 // Startup the bot

@@ -8,6 +8,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
+import { ShiritoriInflectionRoot } from "./ShiritoriInflectionRoot";
 import { ShiritoriWord } from "./ShiritoriWord";
 import { User } from "./User";
 
@@ -38,4 +39,8 @@ export class ShiritoriChannel extends BaseEntity {
   // Words that have ever been used in this channel
   @OneToMany(() => ShiritoriWord, (word) => word.channel, { eager: true })
   wordHistory!: ShiritoriWord[];
+
+  // All root inflections of words that have been said, used to determine uniqueness
+  @OneToMany(() => ShiritoriInflectionRoot, (word) => word.channel, { eager: true })
+  inflectionRoots!: ShiritoriInflectionRoot[];
 }

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Shiritori word uniqueness is now determined by the inflection root (for example, 'running' and 'run' are considered the same)
+- Switched dictionary API from Merriam Webster to Oxford Dictionary
+
 ## [1.1.1] - 2022-09-10
 
 ### Changed

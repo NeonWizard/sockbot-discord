@@ -30,19 +30,26 @@ export const numberToEmoji = (number: number) => {
     .replace(/9/g, "9️⃣");
 };
 
-// Checks Dictionary API to check if word is valid
-export const checkWordValidity = async (word: string): Promise<boolean> => {
-  const res = await fetch(
-    `https://www.dictionaryapi.com/api/v3/references/collegiate/json/${word}?key=${process.env.DICTIONARY_API_KEY}`,
-    {
-      method: "get",
-    }
-  );
+// Queries the Oxford Dictionaries API for inflections of the provided word.
+// Returns an empty array if the word does not exist.
+export const getWordInflections = async (word: string): Promise<string[]> => {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const APP_ID = process.env.DICTIONARY_APP_ID!;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const APP_KEY = process.env.DICTIONARY_APP_KEY!;
+
+  const res = await fetch(`https://od-api.oxforddictionaries.com/api/v2/lemmas/en/${word}`, {
+    headers: { app_id: APP_ID, app_key: APP_KEY },
+  });
+
   const data = await res.json();
-  for (const entry of data) {
-    if (entry?.meta?.id) {
-      return true;
+
+  const inflections = [];
+  for (const lexicalEntry of data.results?.[0].lexicalEntries ?? []) {
+    for (const inflectionOf of lexicalEntry.inflectionOf) {
+      inflections.push(inflectionOf.text.toLowerCase());
     }
   }
-  return false;
+
+  return [...new Set(inflections)];
 };

@@ -4,6 +4,7 @@ import { Bot } from "../bot";
 import { ShiritoriWord } from "../database/models/ShiritoriWord";
 import * as utils from "../utils";
 import { ActionType, UserHistory } from "../database/models/UserHistory";
+import { ShiritoriInflectionRoot } from "../database/models/ShiritoriInflectionRoot";
 
 // Tests a message for adhering to shiritori rules. Returns a string error
 // on failure, otherwise returns undefined.
@@ -119,11 +120,6 @@ export default (bot: Bot): void => {
     }
 
     // -- Add word to chain
-    const wordIsNew =
-      (await ShiritoriWord.findOneBy({
-        word: message.content.toLowerCase(),
-        channel: { id: channel.id },
-      })) === null;
     await addWord(channel, message.author.id, message.content.toLowerCase());
     await message.react("✅");
 
@@ -133,11 +129,34 @@ export default (bot: Bot): void => {
     // chain length bonus points
     pointAward += Math.min(9, Math.floor(channel.chainLength / 3) + 1);
 
-    // word validity
-    const isValidWord = await utils.checkWordValidity(message.content.toLowerCase());
-    if (isValidWord) {
+    // word validity and uniqueness
+    const wordInflections = await utils.getWordInflections(message.content.toLowerCase());
+    if (wordInflections.length > 0) {
       await message.react("📖");
-      if (wordIsNew) {
+
+      let wordIsUnique = true;
+      for (const inflectionRootWord of wordInflections) {
+        let dbInflectionRoot = await ShiritoriInflectionRoot.findOneBy({
+          word: inflectionRootWord,
+          channel: { id: channel.id },
+        });
+
+        if (dbInflectionRoot !== null) {
+          wordIsUnique = false;
+        } else {
+          dbInflectionRoot = new ShiritoriInflectionRoot();
+          dbInflectionRoot.channel = channel;
+          dbInflectionRoot.word = inflectionRootWord;
+          dbInflectionRoot.occurrences = 0;
+
+          channel.inflectionRoots.push(dbInflectionRoot);
+          await channel.save();
+        }
+        dbInflectionRoot.occurrences += 1;
+        await dbInflectionRoot.save();
+      }
+
+      if (wordIsUnique) {
         pointAward = 30;
       }
     } else {
