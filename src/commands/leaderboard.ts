@@ -1,4 +1,4 @@
-import { AllowedMentionsTypes, CommandInteraction, SlashCommandBuilder } from "discord.js";
+import { CommandInteraction, SlashCommandBuilder } from "discord.js";
 import { BotCommand } from ".";
 import { User } from "../database/models/User";
 
