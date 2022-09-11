@@ -33,14 +33,14 @@ export class ShiritoriChannel extends BaseEntity {
   chainLength!: number;
 
   // Words that are in the current chain
-  @OneToMany(() => ShiritoriWord, (word) => word.chainChannel, { eager: true })
+  @OneToMany(() => ShiritoriWord, (word) => word.chainChannel)
   chainWords!: ShiritoriWord[];
 
   // Words that have ever been used in this channel
-  @OneToMany(() => ShiritoriWord, (word) => word.channel, { eager: true })
+  @OneToMany(() => ShiritoriWord, (word) => word.channel)
   wordHistory!: ShiritoriWord[];
 
   // All root inflections of words that have been said, used to determine uniqueness
-  @OneToMany(() => ShiritoriInflectionRoot, (word) => word.channel, { eager: true })
+  @OneToMany(() => ShiritoriInflectionRoot, (word) => word.channel)
   inflectionRoots!: ShiritoriInflectionRoot[];
 }

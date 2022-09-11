@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixed shiritori taking a large amount of time to process a word
+
 ## [1.2.0] - 2022-09-11
 
 ### Added

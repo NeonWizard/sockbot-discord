@@ -56,15 +56,15 @@ const addWord = async (
     wordEnt = new ShiritoriWord();
     wordEnt.word = word;
     wordEnt.occurrences = 0;
-    channel.wordHistory.push(wordEnt);
   }
 
   wordEnt.occurrences += 1;
+  wordEnt.channel = channel;
+  wordEnt.chainChannel = channel;
   await wordEnt.save();
 
   channel.lastUser = await utils.fetchCreateUser(userDiscordID);
   channel.lastWord = wordEnt;
-  channel.chainWords.push(wordEnt);
   channel.chainLength += 1;
   await channel.save();
 
@@ -148,9 +148,6 @@ export default (bot: Bot): void => {
           dbInflectionRoot.channel = channel;
           dbInflectionRoot.word = inflectionRootWord;
           dbInflectionRoot.occurrences = 0;
-
-          channel.inflectionRoots.push(dbInflectionRoot);
-          await channel.save();
         }
         dbInflectionRoot.occurrences += 1;
         await dbInflectionRoot.save();
