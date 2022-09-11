@@ -61,19 +61,19 @@ export const StatsCommand: BotCommand = {
     for (const historyItem of history) {
       switch (historyItem.action) {
         case "doubleornothing_win":
-          stats.GambleStats.pointsWon += historyItem.value1;
+          stats.GambleStats.pointsWon += historyItem.value1 ?? 0;
           stats.GambleStats.timesWon += 1;
           break;
         case "doubleornothing_loss":
-          stats.GambleStats.pointsLost += historyItem.value1;
+          stats.GambleStats.pointsLost += historyItem.value1 ?? 0;
           stats.GambleStats.timesLost += 1;
           break;
         case "shiritori":
-          stats.ShiritoriStats.pointsEarned += historyItem.value1;
+          stats.ShiritoriStats.pointsEarned += historyItem.value1 ?? 0;
           stats.ShiritoriStats.numberOfGoodWords += 1;
           break;
         case "shiritori_fail":
-          stats.ShiritoriStats.pointsLost += historyItem.value1;
+          stats.ShiritoriStats.pointsLost += historyItem.value1 ?? 0;
           stats.ShiritoriStats.numberOfChainBreakers += 1;
           break;
         case "pay":

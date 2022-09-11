@@ -36,9 +36,9 @@ export class UserHistory extends BaseEntity {
   @ManyToOne(() => User, { eager: true, nullable: true })
   targetUser!: User | null;
 
-  @Column({ nullable: true })
-  value1!: number;
+  @Column({ type: "int", nullable: true })
+  value1!: number | null;
 
-  @Column({ nullable: true })
-  value2!: number;
+  @Column({ type: "int", nullable: true })
+  value2!: number | null;
 }
