@@ -19,7 +19,7 @@ if (process.env.DICTIONARY_APP_ID == null || process.env.DICTIONARY_APP_KEY == n
 (async () => {
   // -- Create logger
   const logger = winston.createLogger({
-    level: "info",
+    levels: winston.config.syslog.levels,
     format: winston.format.combine(
       winston.format.timestamp({
         format: "YYYY-MM-DD HH:mm:ss",
@@ -28,13 +28,20 @@ if (process.env.DICTIONARY_APP_ID == null || process.env.DICTIONARY_APP_KEY == n
       winston.format.splat(),
       winston.format.json()
     ),
+    // prettier-ignore
     transports: [
-      // prettier-ignore
       new winston.transports.Console({
         format: winston.format.combine(
           winston.format.colorize(),
           winston.format.simple(),
         ),
+      }),
+      new winston.transports.File({
+        format: winston.format.combine(
+          winston.format.simple(),
+        ),
+        filename: "debug.log",
+        level: "debug",
       }),
     ],
   });
