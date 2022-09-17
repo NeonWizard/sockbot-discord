@@ -130,35 +130,37 @@ export default (bot: Bot): void => {
     pointAward += Math.min(9, Math.floor(channel.chainLength / 3) + 1);
 
     // word validity and uniqueness
-    const wordInflections = await utils.getWordInflections(message.content.toLowerCase());
-    if (wordInflections.length > 0) {
-      await message.react("📖");
+    if (process.env.SHIRITORI_WORD_CHECK === "true") {
+      const wordInflections = await utils.getWordInflections(message.content.toLowerCase());
+      if (wordInflections.length > 0) {
+        await message.react("📖");
 
-      let wordIsUnique = true;
-      for (const inflectionRootWord of wordInflections) {
-        let dbInflectionRoot = await ShiritoriInflectionRoot.findOneBy({
-          word: inflectionRootWord,
-          channel: { id: channel.id },
-        });
+        let wordIsUnique = true;
+        for (const inflectionRootWord of wordInflections) {
+          let dbInflectionRoot = await ShiritoriInflectionRoot.findOneBy({
+            word: inflectionRootWord,
+            channel: { id: channel.id },
+          });
 
-        if (dbInflectionRoot !== null) {
-          wordIsUnique = false;
-        } else {
-          dbInflectionRoot = new ShiritoriInflectionRoot();
-          dbInflectionRoot.channel = channel;
-          dbInflectionRoot.word = inflectionRootWord;
-          dbInflectionRoot.occurrences = 0;
+          if (dbInflectionRoot !== null) {
+            wordIsUnique = false;
+          } else {
+            dbInflectionRoot = new ShiritoriInflectionRoot();
+            dbInflectionRoot.channel = channel;
+            dbInflectionRoot.word = inflectionRootWord;
+            dbInflectionRoot.occurrences = 0;
+          }
+          dbInflectionRoot.occurrences += 1;
+          await dbInflectionRoot.save();
         }
-        dbInflectionRoot.occurrences += 1;
-        await dbInflectionRoot.save();
-      }
 
-      if (wordIsUnique) {
-        pointAward = 30;
+        if (wordIsUnique) {
+          pointAward = 30;
+        }
+      } else {
+        // -5 point penalty for invalid words
+        pointAward = Math.max(0, pointAward - 5);
       }
-    } else {
-      // -5 point penalty for invalid words
-      pointAward = Math.max(0, pointAward - 5);
     }
 
     user.sockpoints += pointAward;
