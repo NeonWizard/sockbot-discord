@@ -31,7 +31,7 @@ const testMessage = (
   }
 
   // 3. No self-replying
-  if (channel.lastUser.discordID === message.author.id) {
+  if (process.env.DEVELOPMENT !== "true" && channel.lastUser.discordID === message.author.id) {
     return "you can't respond to yourself...";
   }
 
