@@ -22,14 +22,14 @@
 
 ## Environment Variables
 
-| Key                       | Description                                                                     |
-| ------------------------- | ------------------------------------------------------------------------------- |
-| DB_USER                   | User for the Postgres DB                                                        |
-| DB_PASSWORD               | Password for the Postgres DB                                                    |
-| DISCORD_TOKEN             | Discord bot token                                                               |
-| DICTIONARY_API_KEY        | API key for Merriam-Webster Dictionary API                                      |
-| DICTIONARY_API_KEY_SCHOOL | API key for Merriam-Webstier School Dictionary API                              |
-| SHIRITORI_WORD_CHECK      | Set to "true" to enable checking the dictionary API for shiritori word validity |
+| Key                  | Description                                                                     |
+| -------------------- | ------------------------------------------------------------------------------- |
+| DB_USER              | User for the Postgres DB                                                        |
+| DB_PASSWORD          | Password for the Postgres DB                                                    |
+| DISCORD_TOKEN        | Discord bot token                                                               |
+| DICTIONARY_APP_ID    | App ID for Oxford dictionary account                                            |
+| DICTIONARY_APP_KEY   | App key for Oxford dictionary account                                           |
+| SHIRITORI_WORD_CHECK | Set to "true" to enable checking the dictionary API for shiritori word validity |
 
 ## Helpful Commands
 
