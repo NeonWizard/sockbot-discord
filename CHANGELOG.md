@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.2] - 2022-09-16
+
+- Added debugging logs to diagnose problems with Discord API
+- Added SHIRITORI_WORD_CHECK env flag for enabling shiritori dictionary checking
+
 ## [1.2.1] - 2022-09-11
 
 ### Fixed

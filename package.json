@@ -1,6 +1,6 @@
 {
   "name": "sockbot-discord",
-  "version": "1.2.2-alpha.1",
+  "version": "1.2.2",
   "description": "",
   "main": "src/index.ts",
   "scripts": {
