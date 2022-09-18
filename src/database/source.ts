@@ -1,10 +1,5 @@
 import { DataSource } from "typeorm";
 import { join } from "path";
-import { User } from "./models/User";
-import { UserHistory } from "./models/UserHistory";
-import { ShiritoriChannel } from "./models/ShiritoriChannel";
-import { ShiritoriWord } from "./models/ShiritoriWord";
-import { ShiritoriInflectionRoot } from "./models/ShiritoriInflectionRoot";
 
 import * as dotenv from "dotenv";
 dotenv.config();
@@ -22,7 +17,7 @@ export const PSQLSource = new DataSource({
   database: "sockbot",
   synchronize: false,
   logging: false,
-  entities: [User, UserHistory, ShiritoriChannel, ShiritoriInflectionRoot, ShiritoriWord],
+  entities: [join(__dirname, "**/models/*.{ts,js}")],
   migrations: [join(__dirname, "**/migrations/*.{ts,js}")],
   migrationsRun: true,
   subscribers: [],
