@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## Added
+
 - Added 'DEVELOPMENT' environment variable flag to disable shiritori rules for testing
+
+## Fixed
+
+- Fixed bot crashing any time logger.warn is called
 
 ## [1.2.2] - 2022-09-16
 

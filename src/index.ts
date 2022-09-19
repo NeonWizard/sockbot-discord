@@ -84,19 +84,19 @@ if (process.env.DICTIONARY_APP_ID == null || process.env.DICTIONARY_APP_KEY == n
   // temporary fix for discord stupid
   client.on("disconnect", (event) => {
     logger.debug("normel");
-    logger.warn(event);
+    logger.warning(event);
   });
   client.on("shardDisconnect", (event) => {
     logger.debug("shart");
-    logger.warn(event);
+    logger.warning(event);
   });
   client.on("shardReconnecting", (event) => {
     logger.debug("reconnect");
-    logger.warn(event);
+    logger.warning(event);
   });
   client.on("shardResume", (event) => {
     logger.debug("resume");
-    logger.warn(event);
+    logger.warning(event);
   });
 
   client.login(process.env.DISCORD_TOKEN).catch((err: Error) => {
