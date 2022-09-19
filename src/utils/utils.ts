@@ -33,9 +33,7 @@ export const numberToEmoji = (number: number) => {
 // Queries the Oxford Dictionaries API for inflections of the provided word.
 // Returns an empty array if the word does not exist.
 export const getWordInflections = async (word: string): Promise<string[]> => {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const APP_ID = process.env.DICTIONARY_APP_ID!;
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const APP_KEY = process.env.DICTIONARY_APP_KEY!;
 
   const res = await fetch(`https://od-api.oxforddictionaries.com/api/v2/lemmas/en/${word}`, {
