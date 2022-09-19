@@ -6,6 +6,7 @@ import readyListener from "./listeners/ready";
 import shiritoriListener from "./listeners/shiritori";
 import commandsListener from "./listeners/commands";
 import bankListener from "./listeners/bank";
+import lotteryListener from "./listeners/lottery";
 
 import { BotCommand, commands } from "./commands";
 
@@ -35,6 +36,7 @@ export class Bot {
     shiritoriListener(this);
     commandsListener(this);
     bankListener(this);
+    lotteryListener(this);
 
     this.logger.info("Initialized bot!");
   }

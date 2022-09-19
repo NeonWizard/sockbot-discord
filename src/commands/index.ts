@@ -7,6 +7,7 @@ import {
 import { BankCommand } from "./bank";
 import { DoubleOrNothingCommand } from "./doubleornothing";
 import { LeaderboardCommand } from "./leaderboard";
+import { LotteryCommand } from "./lottery";
 import { PayCommand } from "./pay";
 import { PingCommand } from "./ping";
 import { PointsCommand } from "./points";
@@ -24,6 +25,7 @@ export const commands = [
   BankCommand,
   DoubleOrNothingCommand,
   LeaderboardCommand,
+  LotteryCommand,
   PayCommand,
   PingCommand,
   PointsCommand,
