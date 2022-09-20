@@ -72,3 +72,11 @@ export const getRandomWeightedValue = (options: { [key: string]: number }) => {
   const r = Math.random();
   return cumulativeValues.find(({ value }) => r <= value)!.key;
 };
+
+export const factorial = (x: number) => {
+  let result = 1;
+  for (let nn = 1; nn <= x; ++nn) {
+    result *= nn;
+  }
+  return result;
+};
