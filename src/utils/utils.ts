@@ -1,5 +1,7 @@
 import { User } from "../database/models/User";
 import fetch from "node-fetch";
+import * as Canvas from "canvas";
+import path from "path";
 
 // Fetches a user, or creates a new one if doesn't exist
 export const fetchCreateUser = async (discordID: string) => {
@@ -73,10 +75,50 @@ export const getRandomWeightedValue = (options: { [key: string]: number }) => {
   return cumulativeValues.find(({ value }) => r <= value)!.key;
 };
 
+// Generates the factorial of a number
 export const factorial = (x: number) => {
   let result = 1;
   for (let nn = 1; nn <= x; ++nn) {
     result *= nn;
   }
   return result;
+};
+
+export const generateLotteryImage = async (latestNumber: number, previousNumbers: number[]) => {
+  Canvas.registerFont(path.join(__dirname, "../static/fonts/nk57-monospace-no-lt.ttf"), {
+    family: "nk57",
+  });
+
+  const canvas = Canvas.createCanvas(498, 393);
+  const ctx = canvas.getContext("2d");
+
+  const img = await Canvas.loadImage(
+    path.join(__dirname, "../static/images", "lottery pointing.png")
+  );
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+  ctx.font = "66px nk57";
+  ctx.fillStyle = "white";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.shadowColor = "white";
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 0;
+  ctx.shadowBlur = 7;
+  ctx.fillText(latestNumber.toString(), 211, 86);
+
+  ctx.font = "35px nk57";
+  ctx.shadowColor = "white";
+  ctx.shadowBlur = 4;
+  previousNumbers.forEach((previousNumber, index) => {
+    ctx.fillText(
+      previousNumber.toString(),
+      198 + (index % 3) * 65,
+      268 + Math.floor(index / 3) * 65
+    );
+  });
+
+  return canvas.toBuffer("image/png");
 };
