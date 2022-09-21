@@ -1,14 +1,5 @@
-import {
-  BaseEntity,
-  Column,
-  Entity,
-  JoinColumn,
-  OneToMany,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from "typeorm";
-import { LotteryEntry } from "./LotteryEntry";
-import { User } from "./User";
+import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { LotteryTicket } from "./LotteryTicket";
 
 @Entity()
 export class Lottery extends BaseEntity {
@@ -19,25 +10,18 @@ export class Lottery extends BaseEntity {
   // OneToOne(() => Guild)
   // guild!: Guild;
 
+  @Column()
+  channelID!: string;
+
   @Column({
     type: "timestamp",
     default: () => "CURRENT_TIMESTAMP(6)",
   })
   startedAt!: Date;
 
-  // Duration in days
-  @Column()
-  duration!: number;
+  @OneToMany(() => LotteryTicket, (ticket) => ticket.lottery)
+  tickets!: LotteryTicket[];
 
-  @Column({ default: 30 })
-  ticketCost!: number;
-
-  @OneToMany(() => LotteryEntry, (entry) => entry.lottery)
-  entries!: LotteryEntry[];
-
-  @OneToOne(() => User, { eager: true, nullable: true })
-  @JoinColumn()
-  winningUser!: User | null;
-
-  readonly jackpotModifier = 0.85;
+  @Column("simple-array")
+  winningNumbers!: number[];
 }
