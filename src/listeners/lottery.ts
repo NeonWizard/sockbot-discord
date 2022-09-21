@@ -1,57 +1,134 @@
 import cron from "node-cron";
 import { Lottery } from "../database/models/Lottery";
 import * as utils from "../utils";
+import * as constants from "../constants";
 
 import { Bot } from "../bot";
-import { IsNull } from "typeorm";
+import { AttachmentBuilder } from "discord.js";
+import { User } from "../database/models/User";
+
+const PRIZE_POOL = constants.LOTTERY_PRIZE_POOL;
+
+const runLottery = async (bot: Bot, lottery: Lottery) => {
+  // Fetch lottery channel
+  const channel = await bot.client.channels.fetch(lottery.channelID);
+  if (channel === null || !channel.isTextBased()) {
+    bot.logger.error(`Could not fetch channel for lottery of ID [${lottery.id}]`);
+    return;
+  }
+
+  // Generate a new random number that hasn't already been picked
+  let rndNumber;
+  do {
+    rndNumber = Math.floor(Math.random() * constants.LOTTERY_POOL_SIZE) + 1;
+  } while (lottery.winningNumbers.includes(rndNumber));
+  const newWinningNumber = rndNumber;
+
+  // Send lottery image to lottery channel
+  const image = await utils.generateLotteryImage(newWinningNumber, lottery.winningNumbers);
+  const attachment = new AttachmentBuilder(image, {
+    name: "lottery.png",
+  });
+  await channel.send({ files: [attachment] });
+
+  // Update lottery
+  lottery.winningNumbers.push(newWinningNumber);
+  await lottery.save();
+
+  // Check if its the last day
+  if (lottery.winningNumbers.length === 7) {
+    const winningNumbersSet = new Set(lottery.winningNumbers);
+
+    // Store map of user IDs to their winning tickets
+    const userWinningTickets: {
+      [userID: number]: { ticket: { number: number; matched: boolean }[]; matches: number }[];
+    } = {};
+
+    // Run all tickets
+    for (const ticket of lottery.tickets) {
+      const vTicket = ticket.numbers.map((number) => ({
+        number: number,
+        matched: winningNumbersSet.has(number),
+      }));
+      const verboseTicket = {
+        ticket: vTicket,
+        matches: vTicket.reduce((acc, ticket) => acc + +ticket.matched, 0),
+      };
+
+      if (!verboseTicket.ticket.some((x) => x.matched)) continue;
+
+      if (userWinningTickets[ticket.user.id] === undefined) {
+        userWinningTickets[ticket.user.id] = [];
+      }
+      userWinningTickets[ticket.user.id].push(verboseTicket);
+    }
+
+    // Reward and inform all winning users
+    for (const [userID, winningTickets] of Object.entries(userWinningTickets)) {
+      const user = (await User.findOneBy({ id: +userID }))!;
+      const sortedWinningTickets = winningTickets.sort((ticket1, ticket2) =>
+        ticket1.matches > ticket2.matches ? -1 : 1
+      );
+      const totalPoints = sortedWinningTickets.reduce(
+        (acc, ticket) => acc + PRIZE_POOL[ticket.matches],
+        0
+      );
+
+      const response = [];
+      response.push(`<@${user.discordID}> won ${totalPoints} total sockpoints!`);
+      response.push("Here is their top 10 tickets:");
+
+      response.push("```");
+      for (const [i, ticket] of sortedWinningTickets.entries()) {
+        // Push command reply line
+        if (i < 10) {
+          response.push(
+            PRIZE_POOL[ticket.matches].toLocaleString() +
+              " sockpoints - " +
+              ticket.ticket.reduce((acc, number) => {
+                acc += " ";
+                if (number.matched) {
+                  return acc + "[" + number.number.toString() + "]";
+                } else {
+                  return acc + number.number.toString();
+                }
+              }, "")
+          );
+        }
+      }
+      response.push("```");
+
+      await channel.send(response.join("\n"));
+    }
+
+    // Delete lottery
+    await lottery.remove();
+
+    // Create new lottery
+    const newLottery = new Lottery();
+    newLottery.channelID = lottery.channelID;
+    newLottery.winningNumbers = [];
+    await newLottery.save();
+  }
+};
 
 // TODO: Make this a module
 export default (bot: Bot): void => {
   const client = bot.client;
 
   client.on("initialized", async () => {
-    // Check for any finished lotteries at 8PM
+    // Handle lotteries at 8PM every day
     cron.schedule(
       // "0 20 * * *",
-      "* * * * *",
+      "*/5 * * * * *",
       async () => {
-        bot.logger.info("Checking for finished lotteries.");
+        bot.logger.info("Generating daily lottery numbers.");
 
-        // get all lotteries that have ended but haven't had a winning user yet
-        const lotteries = (await Lottery.findBy({ winningUser: IsNull() })).filter((lottery) => {
-          const endTime = lottery.startedAt.getTime() + lottery.duration * 1000 * 60 * 60 * 24;
-          return endTime < Date.now();
-        });
-
+        // Run all lotteries
+        const lotteries = await Lottery.find({ relations: ["tickets"] });
         for (const lottery of lotteries) {
           bot.logger.info(`Computing lottery ID: ${lottery.id}`);
-
-          // load lottery's entries
-          lottery.entries = await Lottery.createQueryBuilder()
-            .relation("entries")
-            .of(lottery)
-            .loadMany();
-          if (lottery.entries.length === 0) continue;
-
-          // generate map of entry IDs to ticket counts
-          const entryToTickets = lottery.entries.reduce((acc, entry) => {
-            acc[entry.id.toString()] = entry.tickets;
-            return acc;
-          }, {} as { [key: string]: number });
-
-          // pick a random user weighted by the amount of tickets
-          const winningEntryID = +utils.getRandomWeightedValue(entryToTickets);
-          const winningUser = lottery.entries.find((entry) => entry.id === winningEntryID)!.user;
-
-          // save winning user to lottery
-          lottery.winningUser = winningUser;
-          await lottery.save();
-
-          // award winning user the jackpot
-          const totalTickets = lottery.entries.reduce((acc, entry) => acc + entry.tickets, 0);
-          const jackpot = Math.round(totalTickets * lottery.ticketCost * lottery.jackpotModifier);
-          winningUser.sockpoints += jackpot;
-          await winningUser.save();
+          await runLottery(bot, lottery);
         }
       },
       { timezone: "America/Los_Angeles" }

@@ -99,19 +99,19 @@ export const generateLotteryImage = async (latestNumber: number, previousNumbers
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-  ctx.font = "66px nk57";
+  ctx.font = "68px nk57";
   ctx.fillStyle = "white";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.shadowColor = "white";
+  ctx.shadowColor = "red";
   ctx.shadowOffsetX = 0;
   ctx.shadowOffsetY = 0;
   ctx.shadowBlur = 7;
-  ctx.fillText(latestNumber.toString(), 211, 86);
+  ctx.fillText(latestNumber.toString(), 211, 85);
 
-  ctx.font = "35px nk57";
+  ctx.font = "33px nk57";
   ctx.shadowColor = "white";
-  ctx.shadowBlur = 4;
+  ctx.shadowBlur = 2;
   previousNumbers.forEach((previousNumber, index) => {
     ctx.fillText(
       previousNumber.toString(),
