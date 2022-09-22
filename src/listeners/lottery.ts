@@ -6,6 +6,7 @@ import * as constants from "../constants";
 import { Bot } from "../bot";
 import { AttachmentBuilder } from "discord.js";
 import { User } from "../database/models/User";
+import { ActionType, UserHistory } from "src/database/models/UserHistory";
 
 const PRIZE_POOL = constants.LOTTERY_PRIZE_POOL;
 
@@ -95,6 +96,14 @@ const runLottery = async (bot: Bot, lottery: Lottery) => {
               }, "")
           );
         }
+
+        // Build UserHistory entry
+        const userHistory = new UserHistory();
+        userHistory.user = user;
+        userHistory.action = ActionType.DOUBLEORNOTHING_WIN;
+        userHistory.value1 = ticket.matches;
+        userHistory.value2 = PRIZE_POOL[ticket.matches];
+        await userHistory.save();
       }
       response.push("```");
 
