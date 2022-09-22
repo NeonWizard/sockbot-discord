@@ -15,6 +15,6 @@ export class LotteryTicket extends BaseEntity {
   @ManyToOne(() => User, { eager: true, onDelete: "CASCADE" })
   user!: User;
 
-  @Column("simple-array")
+  @Column("int", { array: true })
   numbers!: number[];
 }

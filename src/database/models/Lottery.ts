@@ -22,6 +22,6 @@ export class Lottery extends BaseEntity {
   @OneToMany(() => LotteryTicket, (ticket) => ticket.lottery)
   tickets!: LotteryTicket[];
 
-  @Column("simple-array")
+  @Column("int", { array: true })
   winningNumbers!: number[];
 }
