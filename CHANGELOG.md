@@ -10,7 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Added
 
 - Added 'DEVELOPMENT' environment variable flag to disable shiritori rules for testing
-- Added lottery system
+- Added sock lottery system
+- Added support for dynamic multiple digit point rewards for shiritori
 
 ## Fixed
 

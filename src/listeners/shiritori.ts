@@ -127,7 +127,7 @@ export default (bot: Bot): void => {
     let pointAward = 0;
 
     // chain length bonus points
-    pointAward += Math.min(9, Math.floor(channel.chainLength / 3) + 1);
+    pointAward += Math.min(10, Math.floor(channel.chainLength / 3) + 1);
 
     // word validity and uniqueness
     if (process.env.SHIRITORI_WORD_CHECK === "true") {
@@ -174,12 +174,14 @@ export default (bot: Bot): void => {
     await userHistory.save();
 
     // -- Send reactions
-    if (pointAward === 30) {
-      await message.react("3️⃣");
-      await message.react("0️⃣");
-      await message.react("⭐");
-    } else {
-      await message.react(utils.numberToEmoji(pointAward));
+    const usedDigits: Set<string> = new Set();
+    for (let digit of pointAward.toString()) {
+      while (usedDigits.has(digit)) {
+        digit = (+digit + 1).toString();
+      }
+      if (digit === "10") continue; // BAD. SHOULDN'T HAPPEN
+      usedDigits.add(digit);
+      await message.react(utils.numberToEmoji(+digit));
     }
   });
 };
