@@ -15,6 +15,7 @@ export enum ActionType {
   SHIRITORI = "shiritori",
   SHIRITORI_FAIL = "shiritori_fail",
   LOTTERY_WIN = "lottery_win",
+  LOTTERY_TICKET_PURCHASE = "lottery_ticket_purchase",
 }
 
 @Entity()

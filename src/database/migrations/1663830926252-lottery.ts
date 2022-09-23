@@ -5,15 +5,6 @@ export class lottery1663830926252 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
-            CREATE TABLE "lottery" (
-                "id" SERIAL NOT NULL,
-                "channelID" character varying NOT NULL,
-                "startedAt" TIMESTAMP NOT NULL DEFAULT ('now'::text)::timestamp(6) with time zone,
-                "winningNumbers" integer array NOT NULL,
-                CONSTRAINT "PK_3c80b07e70c62d855b3ebfdd3ce" PRIMARY KEY ("id")
-            )
-        `);
-    await queryRunner.query(`
             CREATE TABLE "lottery_ticket" (
                 "id" SERIAL NOT NULL,
                 "numbers" integer array NOT NULL,
@@ -29,6 +20,15 @@ export class lottery1663830926252 implements MigrationInterface {
             CREATE INDEX "IDX_dc55ccd1030f56db52b41d40cd" ON "lottery_ticket" ("userId")
         `);
     await queryRunner.query(`
+            CREATE TABLE "lottery" (
+                "id" SERIAL NOT NULL,
+                "channelID" character varying NOT NULL,
+                "startedAt" TIMESTAMP NOT NULL DEFAULT ('now'::text)::timestamp(6) with time zone,
+                "winningNumbers" integer array NOT NULL,
+                CONSTRAINT "PK_3c80b07e70c62d855b3ebfdd3ce" PRIMARY KEY ("id")
+            )
+        `);
+    await queryRunner.query(`
             ALTER TYPE "public"."user_history_action_enum"
             RENAME TO "user_history_action_enum_old"
         `);
@@ -39,7 +39,8 @@ export class lottery1663830926252 implements MigrationInterface {
                 'doubleornothing_loss',
                 'shiritori',
                 'shiritori_fail',
-                'lottery_win'
+                'lottery_win',
+                'lottery_ticket_purchase'
             )
         `);
     await queryRunner.query(`
@@ -87,6 +88,9 @@ export class lottery1663830926252 implements MigrationInterface {
             RENAME TO "user_history_action_enum"
         `);
     await queryRunner.query(`
+            DROP TABLE "lottery"
+        `);
+    await queryRunner.query(`
             DROP INDEX "public"."IDX_dc55ccd1030f56db52b41d40cd"
         `);
     await queryRunner.query(`
@@ -94,9 +98,6 @@ export class lottery1663830926252 implements MigrationInterface {
         `);
     await queryRunner.query(`
             DROP TABLE "lottery_ticket"
-        `);
-    await queryRunner.query(`
-            DROP TABLE "lottery"
         `);
   }
 }

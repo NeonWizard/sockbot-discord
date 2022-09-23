@@ -6,7 +6,7 @@ import * as constants from "../constants";
 import { Bot } from "../bot";
 import { AttachmentBuilder } from "discord.js";
 import { User } from "../database/models/User";
-import { ActionType, UserHistory } from "src/database/models/UserHistory";
+import { ActionType, UserHistory } from "../database/models/UserHistory";
 
 const PRIZE_POOL = constants.LOTTERY_PRIZE_POOL;
 
@@ -77,22 +77,22 @@ const runLottery = async (bot: Bot, lottery: Lottery) => {
 
       const response = [];
       response.push(`<@${user.discordID}> won ${totalPoints} total sockpoints!`);
-      response.push("Here is their top 10 tickets:");
+      response.push("Here are their top 10 tickets:");
 
-      response.push("```");
+      response.push("```css");
       for (const [i, ticket] of sortedWinningTickets.entries()) {
         // Push command reply line
         if (i < 10) {
+          const points = PRIZE_POOL[ticket.matches].toLocaleString();
+          const maxPrizeTextSize =
+            PRIZE_POOL[sortedWinningTickets[0].matches].toLocaleString().length;
+
           response.push(
-            PRIZE_POOL[ticket.matches].toLocaleString() +
-              " sockpoints - " +
+            `${points} sockpoints ${" ".repeat(Math.max(0, maxPrizeTextSize - points.length))} - ` +
               ticket.ticket.reduce((acc, number) => {
-                acc += " ";
-                if (number.matched) {
-                  return acc + "[" + number.number.toString() + "]";
-                } else {
-                  return acc + number.number.toString();
-                }
+                if (acc != "") acc += " ";
+                const numberString = number.number.toString().padStart(2);
+                return acc + (number.matched ? `[${numberString}]` : ` ${numberString} `);
               }, "")
           );
         }
@@ -100,7 +100,7 @@ const runLottery = async (bot: Bot, lottery: Lottery) => {
         // Build UserHistory entry
         const userHistory = new UserHistory();
         userHistory.user = user;
-        userHistory.action = ActionType.DOUBLEORNOTHING_WIN;
+        userHistory.action = ActionType.LOTTERY_WIN;
         userHistory.value1 = ticket.matches;
         userHistory.value2 = PRIZE_POOL[ticket.matches];
         await userHistory.save();
@@ -128,8 +128,8 @@ export default (bot: Bot): void => {
   client.on("initialized", async () => {
     // Handle lotteries at 8PM every day
     cron.schedule(
-      // "0 20 * * *",
-      "*/5 * * * * *",
+      "0 20 * * *",
+      // "*/30 * * * * *", // for testing
       async () => {
         bot.logger.info("Generating daily lottery numbers.");
 

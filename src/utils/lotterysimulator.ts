@@ -1,7 +1,7 @@
 import * as utils from ".";
 import { factorial } from ".";
 
-const getNp1 = (total_balls: number, balls_selected: number, matches: number) => {
+export const getNp1 = (total_balls: number, balls_selected: number, matches: number) => {
   if (balls_selected < matches || total_balls <= balls_selected) {
     return -1;
   }
