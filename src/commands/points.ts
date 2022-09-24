@@ -2,6 +2,7 @@ import * as Canvas from "canvas";
 import { AttachmentBuilder, CommandInteraction, SlashCommandBuilder } from "discord.js";
 import path from "path";
 
+import { Bot } from "../bot";
 import { BotCommand } from "../interfaces";
 import * as utils from "../utils";
 
@@ -11,7 +12,7 @@ export const PointsCommand: BotCommand = {
     .setName("points")
     .setDescription("see urrrr sock points! :0"),
 
-  execute: async (interaction: CommandInteraction) => {
+  execute: async (bot: Bot, interaction: CommandInteraction) => {
     const user = await utils.fetchCreateUser(interaction.user.id);
 
     Canvas.registerFont(path.join(__dirname, "../static/fonts/nk57-monospace-no-eb.ttf"), {

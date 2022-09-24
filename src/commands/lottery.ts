@@ -5,6 +5,7 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 
+import { Bot } from "../bot";
 import { LOTTERY_POOL_SIZE, LOTTERY_PRIZE_POOL, LOTTERY_TICKET_COST } from "../constants";
 import { Lottery } from "../database/models/Lottery";
 import { LotteryTicket } from "../database/models/LotteryTicket";
@@ -173,7 +174,7 @@ export const LotteryCommand: BotCommand = {
         )
     ),
 
-  execute: async (interaction: CommandInteraction) => {
+  execute: async (bot: Bot, interaction: CommandInteraction) => {
     if (!interaction.isChatInputCommand()) return;
 
     // find and ensure an active lottery

@@ -1,5 +1,6 @@
 import { CommandInteraction, SlashCommandBuilder } from "discord.js";
 
+import { Bot } from "../bot";
 import { UserHistory } from "../database/models/UserHistory";
 import { BotCommand } from "../interfaces";
 import * as utils from "../utils";
@@ -31,7 +32,7 @@ export const StatsCommand: BotCommand = {
     .setName("stats")
     .setDescription("your statistics"),
 
-  execute: async (interaction: CommandInteraction) => {
+  execute: async (bot: Bot, interaction: CommandInteraction) => {
     const user = await utils.fetchCreateUser(interaction.user.id);
 
     const history = await UserHistory.find({

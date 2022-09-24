@@ -1,5 +1,6 @@
 import { CommandInteraction, SlashCommandBuilder } from "discord.js";
 
+import { Bot } from "../bot";
 import { ActionType, UserHistory } from "../database/models/UserHistory";
 import { BotCommand } from "../interfaces";
 import * as utils from "../utils";
@@ -15,7 +16,7 @@ export const PayCommand: BotCommand = {
       option.setName("points").setDescription("amount of sooockpoints to send").setRequired(true)
     ),
 
-  execute: async (interaction: CommandInteraction) => {
+  execute: async (bot: Bot, interaction: CommandInteraction) => {
     if (!interaction.isChatInputCommand()) return;
 
     const sender = await utils.fetchCreateUser(interaction.user.id);

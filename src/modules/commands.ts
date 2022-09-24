@@ -17,7 +17,7 @@ export default (bot: Bot): void => {
       bot.logger.info(
         `Command executed: "/${command.builder.name}". Caller: "${interaction.user.username}"`
       );
-      await command.execute(interaction);
+      await command.execute(bot, interaction);
     } catch (error) {
       bot.logger.error("Error executing a command: ", error);
       await interaction.reply({

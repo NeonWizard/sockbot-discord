@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Changed
 
 - Renamed listeners to modules and switched to dynamically importing them
+- Passed bot instance to command execution to expose bot properties (such as logger)
 
 ## Fixed
 

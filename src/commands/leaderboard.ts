@@ -1,6 +1,7 @@
 import { CommandInteraction, SlashCommandBuilder } from "discord.js";
-import { BotCommand } from "../interfaces";
+import { Bot } from "../bot";
 import { User } from "../database/models/User";
+import { BotCommand } from "../interfaces";
 
 export const LeaderboardCommand: BotCommand = {
   // prettier-ignore
@@ -8,7 +9,7 @@ export const LeaderboardCommand: BotCommand = {
     .setName("leaderboard")
     .setDescription("it IS a competition"),
 
-  execute: async (interaction: CommandInteraction) => {
+  execute: async (bot: Bot, interaction: CommandInteraction) => {
     // prettier-ignore
     const topUsers = await User.createQueryBuilder("leaderboard")
       .select()
