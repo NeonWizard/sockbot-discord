@@ -121,7 +121,6 @@ const runLottery = async (bot: Bot, lottery: Lottery) => {
   }
 };
 
-// TODO: Make this a module
 export default (bot: Bot): void => {
   const client = bot.client;
 

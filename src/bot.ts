@@ -1,12 +1,8 @@
 import { Client, Collection } from "discord.js";
+import * as fs from "node:fs/promises";
+import path from "path";
 import { DataSource } from "typeorm";
 import { Logger } from "winston";
-
-import bankListener from "./listeners/bank";
-import commandsListener from "./listeners/commands";
-import lotteryListener from "./listeners/lottery";
-import readyListener from "./listeners/ready";
-import shiritoriListener from "./listeners/shiritori";
 
 import { commands } from "./commands";
 import { BotCommand } from "./interfaces";
@@ -27,21 +23,29 @@ export class Bot {
   }
 
   public async initialize(): Promise<void> {
+    await this.loadModules();
     await this.loadCommands();
     await this.setVersionStatus();
-
-    // TODO: cmon man it's obvious
-    // hint: modularize
-    readyListener(this);
-    shiritoriListener(this);
-    commandsListener(this);
-    bankListener(this);
-    lotteryListener(this);
 
     this.logger.info("Initialized bot!");
   }
 
+  public async loadModules(): Promise<void> {
+    this.logger.info("Loading modules...");
+    const modulesPath = path.join(__dirname, "modules");
+    const moduleFiles = await fs.readdir(modulesPath).then((files) => {
+      return files.filter((file) => file.endsWith(".ts") || file.endsWith(".js"));
+    });
+
+    for (const file of moduleFiles) {
+      const filePath = path.join(modulesPath, file);
+      const module = await import(filePath);
+      module.default(this);
+    }
+  }
+
   public async loadCommands(): Promise<void> {
+    this.logger.info("Loading commands...");
     for (const command of commands) {
       this.commands.set(command.builder.name, command);
     }

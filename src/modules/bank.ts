@@ -3,7 +3,6 @@ import cron from "node-cron";
 import { Bot } from "../bot";
 import { User } from "../database/models/User";
 
-// TODO: Make this a module
 export default (bot: Bot): void => {
   const client = bot.client;
 
