@@ -48,4 +48,7 @@ docker push averagewizard13/sockbot-discord:dev
 # Bump yarn version
 yarn version
 yarn version --prerelease --preid=alpha
+
+# Deploying commands from prod
+sudo docker exec -it sockbot-discord yarn commands:deploy
 ```
