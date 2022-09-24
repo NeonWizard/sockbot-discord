@@ -1,6 +1,7 @@
 import { CommandInteraction, SlashCommandBuilder } from "discord.js";
-import { BotCommand } from ".";
+
 import { UserHistory } from "../database/models/UserHistory";
+import { BotCommand } from "../interfaces";
 import * as utils from "../utils";
 
 type Stats = {

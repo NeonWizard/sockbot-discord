@@ -1,5 +1,6 @@
 import { CommandInteraction, SlashCommandBuilder } from "discord.js";
-import { BotCommand } from ".";
+
+import { BotCommand } from "../interfaces";
 
 export const PingCommand: BotCommand = {
   // prettier-ignore

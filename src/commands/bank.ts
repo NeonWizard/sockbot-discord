@@ -1,5 +1,5 @@
 import { CommandInteraction, SlashCommandBuilder } from "discord.js";
-import { BotCommand } from ".";
+import { BotCommand } from "../interfaces";
 import * as utils from "../utils";
 
 export const BankCommand: BotCommand = {

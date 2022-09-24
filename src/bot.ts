@@ -2,14 +2,14 @@ import { Client, Collection } from "discord.js";
 import { DataSource } from "typeorm";
 import { Logger } from "winston";
 
+import bankListener from "./listeners/bank";
+import commandsListener from "./listeners/commands";
+import lotteryListener from "./listeners/lottery";
 import readyListener from "./listeners/ready";
 import shiritoriListener from "./listeners/shiritori";
-import commandsListener from "./listeners/commands";
-import bankListener from "./listeners/bank";
-import lotteryListener from "./listeners/lottery";
 
-import { BotCommand, commands } from "./commands";
-
+import { commands } from "./commands";
+import { BotCommand } from "./interfaces";
 import { VERSION } from "./version";
 
 export class Bot {

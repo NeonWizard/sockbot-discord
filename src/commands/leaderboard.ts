@@ -1,5 +1,5 @@
 import { CommandInteraction, SlashCommandBuilder } from "discord.js";
-import { BotCommand } from ".";
+import { BotCommand } from "../interfaces";
 import { User } from "../database/models/User";
 
 export const LeaderboardCommand: BotCommand = {

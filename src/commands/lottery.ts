@@ -4,12 +4,13 @@ import {
   CommandInteraction,
   SlashCommandBuilder,
 } from "discord.js";
-import { BotCommand } from ".";
+
 import { LOTTERY_POOL_SIZE, LOTTERY_PRIZE_POOL, LOTTERY_TICKET_COST } from "../constants";
 import { Lottery } from "../database/models/Lottery";
 import { LotteryTicket } from "../database/models/LotteryTicket";
 import { User } from "../database/models/User";
 import { ActionType, UserHistory } from "../database/models/UserHistory";
+import { BotCommand } from "../interfaces";
 import * as utils from "../utils";
 
 const getLotteryInfo = async (interaction: ChatInputCommandInteraction) => {

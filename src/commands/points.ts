@@ -1,8 +1,9 @@
-import { AttachmentBuilder, CommandInteraction, SlashCommandBuilder } from "discord.js";
-import * as utils from "../utils";
 import * as Canvas from "canvas";
+import { AttachmentBuilder, CommandInteraction, SlashCommandBuilder } from "discord.js";
 import path from "path";
-import { BotCommand } from ".";
+
+import { BotCommand } from "../interfaces";
+import * as utils from "../utils";
 
 export const PointsCommand: BotCommand = {
   // prettier-ignore

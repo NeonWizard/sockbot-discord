@@ -1,6 +1,7 @@
 import { CommandInteraction, SlashCommandBuilder } from "discord.js";
+
 import { ActionType, UserHistory } from "../database/models/UserHistory";
-import { BotCommand } from ".";
+import { BotCommand } from "../interfaces";
 import * as utils from "../utils";
 
 export const PayCommand: BotCommand = {
