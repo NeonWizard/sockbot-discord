@@ -7,18 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## Added
+## [1.3.0] - 2022-09-23
+
+### Added
 
 - Added 'DEVELOPMENT' environment variable flag to disable shiritori rules for testing
 - Added sock lottery system
 - Added support for dynamic multiple digit point rewards for shiritori
 
-## Changed
+### Changed
 
 - Renamed listeners to modules and switched to dynamically importing them
 - Passed bot instance to command execution to expose bot properties (such as logger)
 
-## Fixed
+### Fixed
 
 - Fixed bot crashing any time logger.warn is called
 
@@ -71,7 +73,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Shiritori word must now be at least two letters
 
-[unreleased]: https://github.com/NeonWizard/sockbot-discord/compare/v1.2.1...HEAD
+[unreleased]: https://github.com/NeonWizard/sockbot-discord/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/NeonWizard/sockbot-discord/compare/v1.2.2...v1.3.0
+[1.2.2]: https://github.com/NeonWizard/sockbot-discord/compare/v1.2.1...v1.2.2
 [1.2.1]: https://github.com/NeonWizard/sockbot-discord/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/NeonWizard/sockbot-discord/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/NeonWizard/sockbot-discord/compare/v1.1.0...v1.1.1
