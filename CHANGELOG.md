@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added sock lottery system
 - Added support for dynamic multiple digit point rewards for shiritori
 
+## Changed
+
+- Renamed listeners to modules and switched to dynamically importing them
+
 ## Fixed
 
 - Fixed bot crashing any time logger.warn is called
