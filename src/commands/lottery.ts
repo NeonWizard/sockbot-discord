@@ -179,7 +179,7 @@ export const LotteryCommand: BotCommand = {
 
     // find and ensure an active lottery
     // TODO: tie to guild
-    const activeLottery = await Lottery.findOne({ where: {}, relations: ["tickets"] });
+    const activeLottery = await Lottery.findOne({ where: {}, relations: { tickets: true } });
     if (activeLottery === null) {
       await interaction.reply("there's no active lottery, check back later");
       return;

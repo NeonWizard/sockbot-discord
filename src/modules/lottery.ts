@@ -133,7 +133,7 @@ export default (bot: Bot): void => {
         bot.logger.info("Generating daily lottery numbers.");
 
         // Run all lotteries
-        const lotteries = await Lottery.find({ relations: ["tickets"] });
+        const lotteries = await Lottery.find({ relations: { tickets: true } });
         for (const lottery of lotteries) {
           bot.logger.info(`Computing lottery ID: ${lottery.id}`);
           await runLottery(bot, lottery);
