@@ -6,13 +6,13 @@ export class KnownWord extends BaseEntity {
   id!: number;
 
   @Column({ unique: true })
-  word!: string;
+  text!: string;
 
   @Column({ default: 0 })
   occurrences!: number;
 
   // Whether word is valid according to dictionary API. Null if unknown
-  @Column({ nullable: true })
+  @Column({ type: "boolean", nullable: true })
   valid!: boolean | null;
 
   @ManyToOne(() => KnownWord, (word) => word.inflections, { nullable: true })

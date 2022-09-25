@@ -2,6 +2,7 @@ import { User } from "../database/models/User";
 import fetch from "node-fetch";
 import * as Canvas from "canvas";
 import path from "path";
+import { KnownWord } from "../database/models/KnownWord";
 
 // Fetches a user, or creates a new one if doesn't exist
 export const fetchCreateUser = async (discordID: string) => {
@@ -14,6 +15,19 @@ export const fetchCreateUser = async (discordID: string) => {
   }
 
   return user;
+};
+
+// Fetches a known word, or creates a new one if doesn't exist
+export const fetchCreateWord = async (word: string) => {
+  let wordEnt = await KnownWord.findOne({ where: { text: word } });
+  if (wordEnt === null) {
+    wordEnt = new KnownWord();
+    wordEnt.text = word;
+    wordEnt.occurrences = 0;
+    await wordEnt.save();
+  }
+
+  return wordEnt;
 };
 
 // Converts digits in a number to their emoji representation

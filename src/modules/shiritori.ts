@@ -2,6 +2,8 @@ import { Message } from "discord.js";
 import { Bot } from "../bot";
 import { KnownWord } from "../database/models/KnownWord";
 import { ShiritoriChannel } from "../database/models/ShiritoriChannel";
+import { ShiritoriWord } from "../database/models/ShiritoriWord";
+import { User } from "../database/models/User";
 import { ActionType, UserHistory } from "../database/models/UserHistory";
 import * as utils from "../utils";
 
@@ -35,35 +37,28 @@ const testMessage = (
   }
 
   // 4. Message starts with last message's last character (CHAIN-BREAKER)
-  const expectedStartLetter = lastWord.word.at(lastWord.word.length - 1) ?? "";
+  const expectedStartLetter = lastWord.text.at(lastWord.text.length - 1) ?? "";
   if (!content.startsWith(expectedStartLetter)) {
     return "get freaking shiritori'd";
   }
 };
 
 // -- TypeORM helpers
-const addWord = async (
-  channel: ShiritoriChannel,
-  userDiscordID: string,
-  word: string
-): Promise<void> => {
-  let wordEnt = await ShiritoriWord.findOne({
-    where: { channel: { id: channel.id }, word: { word: word } },
-    relations: { channel: true },
-  });
-  if (wordEnt === null) {
-    wordEnt = new ShiritoriWord();
-    wordEnt.word = word;
-    wordEnt.occurrences = 0;
-  }
+const addWord = async (channel: ShiritoriChannel, user: User, word: KnownWord): Promise<void> => {
+  // Bump KnownWord occurrences
+  word.occurrences += 1;
+  await word.save();
 
-  wordEnt.occurrences += 1;
-  wordEnt.channel = channel;
-  wordEnt.chainChannel = channel;
-  await wordEnt.save();
+  // Upsert ShiritoriWord
+  const shiritoriWord = new ShiritoriWord();
+  shiritoriWord.channel = channel;
+  shiritoriWord.word = word;
+  shiritoriWord.chained = true;
+  await ShiritoriWord.upsert(shiritoriWord, ["word"]);
 
-  channel.lastUser = await utils.fetchCreateUser(userDiscordID);
-  channel.lastWord = wordEnt;
+  // Update channel
+  channel.lastUser = user;
+  channel.lastWord = word;
   channel.chainLength += 1;
   await channel.save();
 
@@ -74,10 +69,10 @@ export default (bot: Bot): void => {
   const client = bot.client;
 
   client.on("messageCreate", async (message: Message) => {
-    // -- Bots can't participate in Shiritori. T-T
+    // Bots can't participate in Shiritori. T-T
     if (message.author.bot) return;
 
-    // -- Find ShiritoriChannel in database
+    // Find ShiritoriChannel in database
     const channel = await ShiritoriChannel.findOneBy({
       channelID: message.channelId,
     });
@@ -85,7 +80,7 @@ export default (bot: Bot): void => {
 
     const user = await utils.fetchCreateUser(message.author.id);
 
-    // -- Check validity of message
+    // Check validity of message
     const err = testMessage(message, channel, channel.lastWord);
     if (err !== undefined) {
       const pointPenalty = Math.max(10, channel.chainLength * 1);
@@ -96,11 +91,14 @@ export default (bot: Bot): void => {
       await user.save();
 
       // reset channel
-      // channel.chainWords = [];
       channel.chainLength = 0;
       channel.lastWord = null;
       channel.lastUser = null;
       await channel.save();
+      await ShiritoriWord.update(
+        { channel: { id: channel.id }, chained: true },
+        { chained: false }
+      );
 
       // log failure in UserHistory table
       const userHistory = new UserHistory();
@@ -118,61 +116,59 @@ export default (bot: Bot): void => {
       return;
     }
 
-    // -- Add word to chain
-    await addWord(channel, message.author.id, message.content.toLowerCase());
     await message.react("✅");
-
-    // -- Calculate point award
+    const knownWordEnt = await utils.fetchCreateWord(message.content.toLowerCase());
     let pointAward = 0;
 
-    // chain length bonus points
+    // Bonus points based on chain length
     pointAward += Math.min(10, Math.floor(channel.chainLength / 3) + 1);
 
-    // word validity and uniqueness
+    // Check validity of words for bonus points
     if (process.env.SHIRITORI_WORD_CHECK === "true") {
-      const wordInflections = await utils.getWordInflections(message.content.toLowerCase());
-      if (wordInflections.length > 0) {
+      if (knownWordEnt.valid === null) {
+        // If word hasn't been dictionary checked before, check with API and also add all inflections to KnownWords
+        const wordInflections = await utils.getWordInflections(message.content.toLowerCase());
+        for (const inflection of wordInflections) {
+          const inflectionEnt = await utils.fetchCreateWord(inflection);
+          inflectionEnt.valid = true;
+          // inflectionEnt.inflectionRoot = // todo
+          await inflectionEnt.save();
+        }
+        knownWordEnt.valid = wordInflections.length > 0;
+        await knownWordEnt.save();
+      }
+
+      if (!knownWordEnt.valid) {
+        // -5 point penalty for invalid words
+        pointAward = Math.max(0, pointAward - 5);
+      } else {
         await message.react("📖");
 
-        let wordIsUnique = true;
-        for (const inflectionRootWord of wordInflections) {
-          let dbInflectionRoot = await ShiritoriInflectionRoot.findOneBy({
-            word: inflectionRootWord,
-            channel: { id: channel.id },
-          });
-
-          if (dbInflectionRoot !== null) {
-            wordIsUnique = false;
-          } else {
-            dbInflectionRoot = new ShiritoriInflectionRoot();
-            dbInflectionRoot.channel = channel;
-            dbInflectionRoot.word = inflectionRootWord;
-            dbInflectionRoot.occurrences = 0;
-          }
-          dbInflectionRoot.occurrences += 1;
-          await dbInflectionRoot.save();
-        }
+        // 30 point bonus for unique words (unique in this channel)
+        const wordIsUnique =
+          (await ShiritoriWord.count({
+            where: { channel: { id: channel.id }, word: { text: knownWordEnt.text } },
+          })) === 0;
 
         if (wordIsUnique) {
           pointAward = 30;
         }
-      } else {
-        // -5 point penalty for invalid words
-        pointAward = Math.max(0, pointAward - 5);
       }
     }
+
+    await addWord(channel, user, knownWordEnt);
 
     user.sockpoints += pointAward;
     await user.save();
 
-    // -- Record shiritori action in UserHistory
+    // Record shiritori action in UserHistory
     const userHistory = new UserHistory();
     userHistory.user = user;
     userHistory.action = ActionType.SHIRITORI;
     userHistory.value1 = pointAward;
     await userHistory.save();
 
-    // -- Send reactions
+    // Send reactions
     const usedDigits: Set<string> = new Set();
     for (let digit of pointAward.toString()) {
       while (usedDigits.has(digit)) {
@@ -181,6 +177,10 @@ export default (bot: Bot): void => {
       if (digit === "10") continue; // BAD. SHOULDN'T HAPPEN
       usedDigits.add(digit);
       await message.react(utils.numberToEmoji(+digit));
+    }
+
+    if (pointAward === 30) {
+      await message.react("⭐");
     }
   });
 };
