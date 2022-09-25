@@ -3,13 +3,13 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
-  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
-import { ShiritoriInflectionRoot } from "./ShiritoriInflectionRoot";
-import { ShiritoriWord } from "./ShiritoriWord";
+import { KnownWord } from "./KnownWord";
 import { User } from "./User";
 
 @Entity()
@@ -24,23 +24,21 @@ export class ShiritoriChannel extends BaseEntity {
   lastUser!: User | null;
 
   // Need to keep track of last word becoz chainWords is unordered
-  @OneToOne(() => ShiritoriWord, { nullable: true, eager: true })
+  @OneToOne(() => KnownWord, { nullable: true, eager: true })
   @JoinColumn()
-  lastWord!: ShiritoriWord | null;
+  lastWord!: KnownWord | null;
 
   // Need to keep track of chain length becoz chainWords does not contain duplicates
   @Column({ default: 0 })
   chainLength!: number;
 
   // Words that are in the current chain
-  @OneToMany(() => ShiritoriWord, (word) => word.chainChannel)
-  chainWords!: ShiritoriWord[];
+  @ManyToMany(() => KnownWord)
+  @JoinTable({ name: "shiritori_chain" })
+  chainWords!: KnownWord[];
 
   // Words that have ever been used in this channel
-  @OneToMany(() => ShiritoriWord, (word) => word.channel)
-  wordHistory!: ShiritoriWord[];
-
-  // All root inflections of words that have been said, used to determine uniqueness
-  @OneToMany(() => ShiritoriInflectionRoot, (word) => word.channel)
-  inflectionRoots!: ShiritoriInflectionRoot[];
+  @ManyToMany(() => KnownWord)
+  @JoinTable({ name: "shiritori_history" })
+  wordHistory!: KnownWord[];
 }

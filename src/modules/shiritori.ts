@@ -1,17 +1,16 @@
 import { Message } from "discord.js";
-import { ShiritoriChannel } from "../database/models/ShiritoriChannel";
 import { Bot } from "../bot";
-import { ShiritoriWord } from "../database/models/ShiritoriWord";
-import * as utils from "../utils";
+import { KnownWord } from "../database/models/KnownWord";
+import { ShiritoriChannel } from "../database/models/ShiritoriChannel";
 import { ActionType, UserHistory } from "../database/models/UserHistory";
-import { ShiritoriInflectionRoot } from "../database/models/ShiritoriInflectionRoot";
+import * as utils from "../utils";
 
 // Tests a message for adhering to shiritori rules. Returns a string error
 // on failure, otherwise returns undefined.
 const testMessage = (
   message: Message,
   channel: ShiritoriChannel,
-  lastWord: ShiritoriWord | null
+  lastWord: KnownWord | null
 ): string | undefined => {
   const content = message.content.toLowerCase();
 
@@ -49,7 +48,7 @@ const addWord = async (
   word: string
 ): Promise<void> => {
   let wordEnt = await ShiritoriWord.findOne({
-    where: { channel: { id: channel.id }, word: word },
+    where: { channel: { id: channel.id }, word: { word: word } },
     relations: { channel: true },
   });
   if (wordEnt === null) {
@@ -97,7 +96,7 @@ export default (bot: Bot): void => {
       await user.save();
 
       // reset channel
-      channel.chainWords = [];
+      // channel.chainWords = [];
       channel.chainLength = 0;
       channel.lastWord = null;
       channel.lastUser = null;
