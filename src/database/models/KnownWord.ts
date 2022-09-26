@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class KnownWord extends BaseEntity {
@@ -15,9 +15,18 @@ export class KnownWord extends BaseEntity {
   @Column({ type: "boolean", nullable: true })
   valid!: boolean | null;
 
-  @ManyToOne(() => KnownWord, (word) => word.inflections, { nullable: true })
-  inflectionRoot!: KnownWord | null;
+  @ManyToMany(() => KnownWord, (word) => word.inflections)
+  inflectionOf!: KnownWord[];
 
-  @OneToMany(() => KnownWord, (word) => word.inflectionRoot)
+  @ManyToMany(() => KnownWord, (word) => word.inflectionOf)
+  @JoinTable({
+    name: "known_word_inflections",
+    joinColumn: {
+      name: "inflectionOf",
+    },
+    inverseJoinColumn: {
+      name: "inflection",
+    },
+  })
   inflections!: KnownWord[];
 }

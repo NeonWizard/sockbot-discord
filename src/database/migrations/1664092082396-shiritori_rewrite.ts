@@ -17,14 +17,9 @@ export class shiritoriRewrite1664092082396 implements MigrationInterface {
             "text" character varying NOT NULL,
             "occurrences" integer NOT NULL DEFAULT '0',
             "valid" boolean,
-            "inflectionRootId" integer,
             CONSTRAINT "UQ_39ff079d8f67c509acd8272f0af" UNIQUE ("text"),
             CONSTRAINT "PK_c2f3a6b7e82cadfa62832241867" PRIMARY KEY ("id")
         )
-    `);
-    await queryRunner.query(`
-        ALTER TABLE "known_word"
-        ADD CONSTRAINT "FK_8c3bf20faf323e80e098b04a8ee" FOREIGN KEY ("inflectionRootId") REFERENCES "known_word"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
     `);
 
     // Insert into KnownWord table with values from old ShiritoriWord table, setting valid to null
@@ -128,9 +123,49 @@ export class shiritoriRewrite1664092082396 implements MigrationInterface {
         ALTER COLUMN "channelId"
         SET NOT NULL
     `);
+
+    // KnownWordInflections linking table
+    await queryRunner.query(`
+        CREATE TABLE "known_word_inflections" (
+            "inflectionOf" integer NOT NULL,
+            "inflection" integer NOT NULL,
+            CONSTRAINT "PK_f9821cad50473965772f1d22fa9" PRIMARY KEY ("inflectionOf", "inflection")
+        )
+    `);
+    await queryRunner.query(`
+        CREATE INDEX "IDX_32d1f1b150c16b947cc30a9932" ON "known_word_inflections" ("inflectionOf")
+    `);
+    await queryRunner.query(`
+        CREATE INDEX "IDX_af7e639d4650942f896109f887" ON "known_word_inflections" ("inflection")
+    `);
+    await queryRunner.query(`
+        ALTER TABLE "known_word_inflections"
+        ADD CONSTRAINT "FK_32d1f1b150c16b947cc30a99322" FOREIGN KEY ("inflectionOf") REFERENCES "known_word"("id") ON DELETE CASCADE ON UPDATE CASCADE
+    `);
+    await queryRunner.query(`
+        ALTER TABLE "known_word_inflections"
+        ADD CONSTRAINT "FK_af7e639d4650942f896109f887d" FOREIGN KEY ("inflection") REFERENCES "known_word"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
+    `);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    // KnownWordInflections linking table
+    await queryRunner.query(`
+        ALTER TABLE "known_word_inflections" DROP CONSTRAINT "FK_af7e639d4650942f896109f887d"
+    `);
+    await queryRunner.query(`
+        ALTER TABLE "known_word_inflections" DROP CONSTRAINT "FK_32d1f1b150c16b947cc30a99322"
+    `);
+    await queryRunner.query(`
+        DROP INDEX "public"."IDX_af7e639d4650942f896109f887"
+    `);
+    await queryRunner.query(`
+        DROP INDEX "public"."IDX_32d1f1b150c16b947cc30a9932"
+    `);
+    await queryRunner.query(`
+        DROP TABLE "known_word_inflections"
+    `);
+
     // Set ShiritoriWord channelId to be nullable
     await queryRunner.query(`
         ALTER TABLE "shiritori_word"
@@ -226,10 +261,6 @@ export class shiritoriRewrite1664092082396 implements MigrationInterface {
     `);
 
     // Drop KnownWord table
-    await queryRunner.query(`
-        ALTER TABLE "known_word"
-        DROP CONSTRAINT "FK_8c3bf20faf323e80e098b04a8ee"
-    `);
     await queryRunner.query(`
         DROP TABLE "known_word"
     `);
