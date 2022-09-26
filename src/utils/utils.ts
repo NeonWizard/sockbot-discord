@@ -143,3 +143,13 @@ export const generateLotteryImage = async (latestNumber: number, previousNumbers
 
   return canvas.toBuffer("image/png");
 };
+
+// Generates an array of unique random values between min (inclusive) and max (exclusive)
+export const generateUniqueRandomArray = (min: number, max: number, length: number) => {
+  const arr: number[] = [];
+  while (arr.length < length) {
+    const r = Math.floor(Math.random() * (max - min) + min);
+    if (!arr.includes(r)) arr.push(r);
+  }
+  return arr;
+};
