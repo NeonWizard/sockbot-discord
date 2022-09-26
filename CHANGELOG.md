@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Generalized shiritori word storage, storing dictionary API results to reduce API calls
 
+### Fixed
+
+- Fixed shiritori counting words that are part of a valid phrase as valid when not otherwise valid on their own
+
 ## [1.3.0] - 2022-09-23
 
 ### Added

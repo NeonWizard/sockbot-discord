@@ -69,7 +69,10 @@ export const getWordInflectionRoots = async (word: string): Promise<string[]> =>
     }
   }
 
-  return [...new Set(inflections)];
+  const deduplicatedInflections = [...new Set(inflections)];
+  const wordsOnly = deduplicatedInflections.filter((inflection) => !inflection.includes(" "));
+
+  return wordsOnly;
 };
 
 // Pass in an object like { a: 10, b: 4, c: 400 } and it'll return either "a", "b", or "c", factoring in their respective
