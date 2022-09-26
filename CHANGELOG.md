@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Generalized shiritori word storage, storing dictionary API results to reduce API calls
+- Updated dependencies
 
 ### Fixed
 
