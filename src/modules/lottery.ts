@@ -127,12 +127,16 @@ export default (bot: Bot): void => {
   client.on("initialized", async () => {
     // Pre-emptively restart bot 20 mins before lottery. This is
     // a temporary fix for bot losing websocket
-    cron.schedule("40 19 * * *", () => {
-      bot.logger.info(
-        "Pre-emptively restarting bot 30 minutes before lottery to reacquire websocket."
-      );
-      process.exit(0);
-    });
+    cron.schedule(
+      "40 19 * * *",
+      () => {
+        bot.logger.info(
+          "Pre-emptively restarting bot 20 minutes before lottery to reacquire websocket."
+        );
+        process.exit(0);
+      },
+      { timezone: "America/Los_Angeles" }
+    );
 
     // Handle lotteries at 8PM every day
     cron.schedule(
