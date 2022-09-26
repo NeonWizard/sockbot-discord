@@ -120,10 +120,7 @@ const buyTickets = async (
     const ticket = new LotteryTicket();
     ticket.lottery = lottery;
     ticket.user = user;
-    ticket.numbers = Array.from(
-      { length: 7 },
-      () => Math.floor(Math.random() * LOTTERY_POOL_SIZE) + 1
-    );
+    ticket.numbers = utils.generateUniqueRandomArray(1, LOTTERY_POOL_SIZE + 1, 7);
     tickets.push(ticket);
   }
   await LotteryTicket.save(tickets);
