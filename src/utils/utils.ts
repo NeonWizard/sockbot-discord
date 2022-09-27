@@ -19,7 +19,10 @@ export const fetchCreateUser = async (discordID: string) => {
 
 // Fetches a known word, or creates a new one if doesn't exist
 export const fetchCreateWord = async (word: string) => {
-  let wordEnt = await KnownWord.findOne({ where: { text: word } });
+  let wordEnt = await KnownWord.findOne({
+    where: { text: word },
+    relations: { inflections: true, inflectionOf: true },
+  });
   if (wordEnt === null) {
     wordEnt = new KnownWord();
     wordEnt.text = word;
@@ -46,9 +49,10 @@ export const numberToEmoji = (number: number) => {
     .replace(/9/g, "9️⃣");
 };
 
+// TODO: Have this insert word and inflections into database and return Word entities
 // Queries the Oxford Dictionaries API for inflections of the provided word.
 // Returns an empty array if the word does not exist.
-export const getWordInflections = async (word: string): Promise<string[]> => {
+export const getWordInflectionRoots = async (word: string): Promise<string[]> => {
   const APP_ID = process.env.DICTIONARY_APP_ID!;
   const APP_KEY = process.env.DICTIONARY_APP_KEY!;
 

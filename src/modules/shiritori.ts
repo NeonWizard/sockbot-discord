@@ -43,6 +43,45 @@ const testMessage = (
   }
 };
 
+const checkWordValidity = async (message: Message, knownWordEnt: KnownWord, pointAward: number) => {
+  if (knownWordEnt.valid === null) {
+    // If word hasn't been dictionary checked before, check with API and also add all inflections to KnownWords
+    const inflectionRoots = await utils.getWordInflectionRoots(knownWordEnt.text);
+    for (const inflectionRoot of inflectionRoots) {
+      const inflectionRootEnt = await utils.fetchCreateWord(inflectionRoot);
+      inflectionRootEnt.valid = true;
+      if (
+        inflectionRootEnt.text !== knownWordEnt.text &&
+        !inflectionRootEnt.inflections.find((inflection) => inflection.text === knownWordEnt.text)
+      ) {
+        inflectionRootEnt.inflections.push(knownWordEnt);
+      }
+      await inflectionRootEnt.save();
+    }
+    knownWordEnt.valid = inflectionRoots.length > 0;
+    await knownWordEnt.save();
+  }
+
+  if (!knownWordEnt.valid) {
+    // -5 point penalty for invalid words
+    pointAward = Math.max(0, pointAward - 5);
+  } else {
+    await message.react("📖");
+
+    // 30 point bonus for unique words (unique in this channel)
+    // Don't worry about it
+    const occurrences = await ShiritoriWord.query(
+      `SELECT COUNT(*) FROM	(SELECT kw.* FROM shiritori_word sw	INNER JOIN known_word kw ON kw.id = sw."wordId" UNION	SELECT known_word.* FROM known_word	INNER JOIN (SELECT kwi."inflectionOf", kwi.inflection FROM shiritori_word sw INNER JOIN known_word kw ON kw.id = sw."wordId" INNER JOIN known_word_inflections kwi ON kwi."inflectionOf" = kw.id OR kwi.inflection = kw.id) j	ON id = j."inflectionOf" OR id = j.inflection) c WHERE c."text" = '${knownWordEnt.text}'`
+    );
+
+    if (occurrences === 0) {
+      pointAward = 30;
+    }
+  }
+
+  return pointAward;
+};
+
 // -- TypeORM helpers
 const addWord = async (channel: ShiritoriChannel, user: User, word: KnownWord): Promise<void> => {
   // Bump KnownWord occurrences
@@ -54,7 +93,7 @@ const addWord = async (channel: ShiritoriChannel, user: User, word: KnownWord): 
   shiritoriWord.channel = channel;
   shiritoriWord.word = word;
   shiritoriWord.chained = true;
-  await ShiritoriWord.upsert(shiritoriWord, ["word"]);
+  await ShiritoriWord.upsert(shiritoriWord, ["word", "channel"]);
 
   // Update channel
   channel.lastUser = user;
@@ -125,35 +164,7 @@ export default (bot: Bot): void => {
 
     // Check validity of words for bonus points
     if (process.env.SHIRITORI_WORD_CHECK === "true") {
-      if (knownWordEnt.valid === null) {
-        // If word hasn't been dictionary checked before, check with API and also add all inflections to KnownWords
-        const wordInflections = await utils.getWordInflections(message.content.toLowerCase());
-        for (const inflection of wordInflections) {
-          const inflectionEnt = await utils.fetchCreateWord(inflection);
-          inflectionEnt.valid = true;
-          // inflectionEnt.inflectionRoot = // todo
-          await inflectionEnt.save();
-        }
-        knownWordEnt.valid = wordInflections.length > 0;
-        await knownWordEnt.save();
-      }
-
-      if (!knownWordEnt.valid) {
-        // -5 point penalty for invalid words
-        pointAward = Math.max(0, pointAward - 5);
-      } else {
-        await message.react("📖");
-
-        // 30 point bonus for unique words (unique in this channel)
-        const wordIsUnique =
-          (await ShiritoriWord.count({
-            where: { channel: { id: channel.id }, word: { text: knownWordEnt.text } },
-          })) === 0;
-
-        if (wordIsUnique) {
-          pointAward = 30;
-        }
-      }
+      pointAward = await checkWordValidity(message, knownWordEnt, pointAward);
     }
 
     await addWord(channel, user, knownWordEnt);
