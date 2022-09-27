@@ -81,24 +81,6 @@ if (process.env.DICTIONARY_APP_ID == null || process.env.DICTIONARY_APP_KEY == n
     logger.debug(message);
   });
 
-  // temporary fix for discord stupid
-  client.on("disconnect", (event) => {
-    logger.debug("normel");
-    logger.warning(event);
-  });
-  client.on("shardDisconnect", (event) => {
-    logger.debug("shart");
-    logger.warning(event);
-  });
-  client.on("shardReconnecting", (event) => {
-    logger.debug("reconnect");
-    logger.warning(event);
-  });
-  client.on("shardResume", (event) => {
-    logger.debug("resume");
-    logger.warning(event);
-  });
-
   client.login(process.env.DISCORD_TOKEN).catch((err: Error) => {
     logger.error("Error logging in: " + err);
   });
