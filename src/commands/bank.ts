@@ -47,7 +47,9 @@ export const BankCommand: BotCommand = {
     // -- Depositing
     if (interaction.options.getSubcommand() === "deposit") {
       if (amount > user.sockpoints) {
-        await interaction.reply("you can't afford that, brokeass");
+        await interaction.reply(
+          `you can't afford that, brokeass. you have ${user.sockpoints} in your wallet.`
+        );
         return;
       }
       user.sockpoints -= amount;

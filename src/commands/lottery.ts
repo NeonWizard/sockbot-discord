@@ -108,7 +108,9 @@ const buyTickets = async (
 
   // user cost deduction
   if (cost > user.sockpoints) {
-    await interaction.reply("you can't afford that, brokeass");
+    await interaction.reply(
+      `you can't afford that, brokeass. that would cost ${cost} sockpoints and you only have ${user.sockpoints} in your wallet.`
+    );
     return;
   }
   user.sockpoints -= cost;
