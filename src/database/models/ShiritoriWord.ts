@@ -1,9 +1,10 @@
-import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, Index, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { KnownWord } from "./KnownWord";
 import { ShiritoriChannel } from "./ShiritoriChannel";
 
 // Linking table between ShiritoriChannel and KnownWord
 @Entity()
+@Index(["channel", "word"], { unique: true })
 export class ShiritoriWord extends BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;

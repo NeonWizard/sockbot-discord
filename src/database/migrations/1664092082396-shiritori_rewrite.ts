@@ -124,6 +124,11 @@ export class shiritoriRewrite1664092082396 implements MigrationInterface {
         SET NOT NULL
     `);
 
+    // Create unique index on ShiritoriWord channel+word composite
+    await queryRunner.query(`
+        CREATE UNIQUE INDEX "IDX_aa697db71a8e4c933ecc86eda1" ON "shiritori_word" ("channelId", "wordId")
+    `);
+
     // KnownWordInflections linking table
     await queryRunner.query(`
         CREATE TABLE "known_word_inflections" (
@@ -164,6 +169,11 @@ export class shiritoriRewrite1664092082396 implements MigrationInterface {
     `);
     await queryRunner.query(`
         DROP TABLE "known_word_inflections"
+    `);
+
+    // Remove ShiritoriWord unique composite index
+    await queryRunner.query(`
+        DROP INDEX "public"."IDX_aa697db71a8e4c933ecc86eda1"
     `);
 
     // Set ShiritoriWord channelId to be nullable
