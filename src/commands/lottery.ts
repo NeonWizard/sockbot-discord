@@ -175,8 +175,10 @@ export const LotteryCommand: BotCommand = {
     if (!interaction.isChatInputCommand()) return;
 
     // find and ensure an active lottery
-    // TODO: tie to guild
-    const activeLottery = await Lottery.findOne({ where: {}, relations: { tickets: true } });
+    const activeLottery = await Lottery.findOne({
+      where: { guild: { guildID: interaction.guild?.id ?? "" } },
+      relations: { tickets: true },
+    });
     if (activeLottery === null) {
       await interaction.reply("there's no active lottery, check back later");
       return;

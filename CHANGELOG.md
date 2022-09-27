@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## Added
+
+- Added Guild database model for separating shiritori channels and lotteries between guilds
+
 ### Changed
 
 - Generalized shiritori word storage, storing dictionary API results to reduce API calls

@@ -1,4 +1,5 @@
-import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Guild } from "./Guild";
 import { LotteryTicket } from "./LotteryTicket";
 
 @Entity()
@@ -6,9 +7,8 @@ export class Lottery extends BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  // todo...
-  // OneToOne(() => Guild)
-  // guild!: Guild;
+  @OneToOne(() => Guild, (guild) => guild.lottery)
+  guild!: Guild;
 
   @Column()
   channelID!: string;

@@ -110,14 +110,15 @@ const runLottery = async (bot: Bot, lottery: Lottery) => {
       await channel.send(response.join("\n"));
     }
 
-    // Delete lottery
-    await lottery.remove();
-
     // Create new lottery
     const newLottery = new Lottery();
     newLottery.channelID = lottery.channelID;
     newLottery.winningNumbers = [];
+    newLottery.guild = lottery.guild;
     await newLottery.save();
+
+    // Delete old lottery
+    await lottery.remove();
   }
 };
 

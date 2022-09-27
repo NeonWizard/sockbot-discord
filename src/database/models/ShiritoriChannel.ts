@@ -8,6 +8,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
+import { Guild } from "./Guild";
 import { KnownWord } from "./KnownWord";
 import { ShiritoriWord } from "./ShiritoriWord";
 import { User } from "./User";
@@ -16,6 +17,9 @@ import { User } from "./User";
 export class ShiritoriChannel extends BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;
+
+  @OneToOne(() => Guild, (guild) => guild.shiritoriChannel)
+  guild!: Guild;
 
   @Column()
   channelID!: string;
