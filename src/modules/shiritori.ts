@@ -1,4 +1,4 @@
-import { Message } from "discord.js";
+import { Message, PartialMessage } from "discord.js";
 import { Bot } from "../bot";
 import { KnownWord } from "../database/models/KnownWord";
 import { ShiritoriChannel } from "../database/models/ShiritoriChannel";
@@ -82,7 +82,6 @@ const checkWordValidity = async (message: Message, knownWordEnt: KnownWord, poin
   return pointAward;
 };
 
-// -- TypeORM helpers
 const addWord = async (channel: ShiritoriChannel, user: User, word: KnownWord): Promise<void> => {
   // Bump KnownWord occurrences
   word.occurrences += 1;
@@ -104,8 +103,82 @@ const addWord = async (channel: ShiritoriChannel, user: User, word: KnownWord): 
   return;
 };
 
+const handleMessageChange = async (
+  bot: Bot,
+  channelID: string,
+  userID: string | undefined,
+  deleted: boolean
+) => {
+  // Find ShiritoriChannel in database
+  const channelEnt = await ShiritoriChannel.findOneBy({
+    channelID: channelID,
+  });
+  if (channelEnt === null) return;
+
+  // Fetch DiscordJS channel object
+  const channel = await bot.client.channels.fetch(channelID);
+  if (channel === null || !channel.isTextBased()) {
+    bot.logger.error(`Could not fetch channel for shiritori channel of ID [${channelEnt.id}]`);
+    return;
+  }
+
+  // Fetch user
+  if (userID === undefined) {
+    bot.logger.warn(
+      "Received message change event in shiritori with no author data attached. Ignoring."
+    );
+    await channel.send("don't edit or delete messages you little sluts");
+    return;
+  }
+  const user = await utils.fetchCreateUser(userID);
+
+  // Break chain
+  const pointPenalty = Math.max(10, channelEnt.chainLength * 10);
+  user.sockpoints -= pointPenalty;
+  await user.save();
+
+  // reset channel
+  channelEnt.chainLength = 0;
+  channelEnt.lastWord = null;
+  channelEnt.lastUser = null;
+  await channelEnt.save();
+  await ShiritoriWord.update({ channel: { id: channelEnt.id }, chained: true }, { chained: false });
+
+  // log failure in UserHistory table
+  const userHistory = new UserHistory();
+  userHistory.user = user;
+  userHistory.action = ActionType.SHIRITORI_FAIL;
+  userHistory.value1 = pointPenalty;
+  await userHistory.save();
+
+  await channel.send(
+    `<@${user.discordID}> thought they were being sneaky by ${
+      deleted ? "deleting" : "editing"
+    } a message. thanks to THEM, the chain was broken, and they lost ${pointPenalty} sockpoints!!`
+  );
+};
+
 export default (bot: Bot): void => {
   const client = bot.client;
+
+  // Prevent users from editing messages
+  client.on(
+    "messageUpdate",
+    async (oldMessage: Message | PartialMessage, newMessage: Message | PartialMessage) => {
+      const channelID = oldMessage.channel.id ?? newMessage.channel.id;
+      const userID = oldMessage.author?.id ?? newMessage.author?.id;
+
+      handleMessageChange(bot, channelID, userID, false);
+    }
+  );
+
+  // Prevent users from deleting messages
+  client.on("messageDelete", async (message: Message | PartialMessage) => {
+    const channelID = message.channel.id;
+    const userID = message.author?.id;
+
+    handleMessageChange(bot, channelID, userID, true);
+  });
 
   client.on("messageCreate", async (message: Message) => {
     // Bots can't participate in Shiritori. T-T

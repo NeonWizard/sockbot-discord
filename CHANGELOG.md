@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Added
 
 - Added Guild database model for separating shiritori channels and lotteries between guilds
+- Added check in shiritori channel for editing or deleting messages, which will incur a penalty and break the chain
 
 ### Changed
 
