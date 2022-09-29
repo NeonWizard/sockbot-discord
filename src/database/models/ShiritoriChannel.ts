@@ -35,7 +35,18 @@ export class ShiritoriChannel extends BaseEntity {
   @Column({ default: 0 })
   chainLength!: number;
 
+  @Column({ type: "timestamp" })
+  chainStartedAt!: Date;
+
   // Words that have ever been used in this channel
   @OneToMany(() => ShiritoriWord, (shiritoriWord) => shiritoriWord.channel)
   shiritoriWords!: ShiritoriWord[];
+
+  async resetChain() {
+    this.chainLength = 0;
+    this.lastWord = null;
+    this.lastUser = null;
+    await this.save();
+    await ShiritoriWord.update({ channel: { id: this.id }, chained: true }, { chained: false });
+  }
 }

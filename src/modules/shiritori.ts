@@ -83,6 +83,10 @@ const checkWordValidity = async (message: Message, knownWordEnt: KnownWord, poin
 };
 
 const addWord = async (channel: ShiritoriChannel, user: User, word: KnownWord): Promise<void> => {
+  if (channel.chainLength === 0) {
+    channel.chainStartedAt = new Date();
+  }
+
   // Bump KnownWord occurrences
   word.occurrences += 1;
   await word.save();
@@ -99,14 +103,13 @@ const addWord = async (channel: ShiritoriChannel, user: User, word: KnownWord): 
   channel.lastWord = word;
   channel.chainLength += 1;
   await channel.save();
-
-  return;
 };
 
 const handleMessageChange = async (
   bot: Bot,
   channelID: string,
   userID: string | undefined,
+  createdAt: Date,
   deleted: boolean
 ) => {
   // Find ShiritoriChannel in database
@@ -132,17 +135,16 @@ const handleMessageChange = async (
   }
   const user = await utils.fetchCreateUser(userID);
 
+  // Don't break chain if affected message was from before when the chain started
+  if (createdAt < channelEnt.chainStartedAt) return;
+
   // Break chain
   const pointPenalty = Math.max(10, channelEnt.chainLength * 10);
   user.sockpoints -= pointPenalty;
   await user.save();
 
   // reset channel
-  channelEnt.chainLength = 0;
-  channelEnt.lastWord = null;
-  channelEnt.lastUser = null;
-  await channelEnt.save();
-  await ShiritoriWord.update({ channel: { id: channelEnt.id }, chained: true }, { chained: false });
+  await channelEnt.resetChain();
 
   // log failure in UserHistory table
   const userHistory = new UserHistory();
@@ -167,8 +169,9 @@ export default (bot: Bot): void => {
     async (oldMessage: Message | PartialMessage, newMessage: Message | PartialMessage) => {
       const channelID = oldMessage.channel.id ?? newMessage.channel.id;
       const userID = oldMessage.author?.id ?? newMessage.author?.id;
+      const createdAt = oldMessage.createdAt ?? newMessage.createdAt;
 
-      handleMessageChange(bot, channelID, userID, false);
+      handleMessageChange(bot, channelID, userID, createdAt, false);
     }
   );
 
@@ -176,8 +179,9 @@ export default (bot: Bot): void => {
   client.on("messageDelete", async (message: Message | PartialMessage) => {
     const channelID = message.channel.id;
     const userID = message.author?.id;
+    const createdAt = message.createdAt;
 
-    handleMessageChange(bot, channelID, userID, true);
+    handleMessageChange(bot, channelID, userID, createdAt, true);
   });
 
   client.on("messageCreate", async (message: Message) => {
@@ -203,14 +207,7 @@ export default (bot: Bot): void => {
       await user.save();
 
       // reset channel
-      channel.chainLength = 0;
-      channel.lastWord = null;
-      channel.lastUser = null;
-      await channel.save();
-      await ShiritoriWord.update(
-        { channel: { id: channel.id }, chained: true },
-        { chained: false }
-      );
+      await channel.resetChain();
 
       // log failure in UserHistory table
       const userHistory = new UserHistory();

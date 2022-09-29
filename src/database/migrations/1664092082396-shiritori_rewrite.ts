@@ -63,6 +63,15 @@ export class shiritoriRewrite1664092082396 implements MigrationInterface {
         ALTER TABLE "shiritori_channel"
         ADD CONSTRAINT "FK_07d843c719a3264ceeed905cba2" FOREIGN KEY ("lastWordId") REFERENCES "known_word"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
     `);
+    await queryRunner.query(`
+        ALTER TABLE "shiritori_channel"
+        ADD "chainStartedAt" TIMESTAMP NOT NULL DEFAULT ('now'::text)::timestamp(6) with time zone
+    `);
+    await queryRunner.query(`
+        ALTER TABLE "shiritori_channel"
+        ALTER COLUMN "chainStartedAt"
+        DROP DEFAULT
+    `);
 
     // ShiritoriWord occurrences
     await queryRunner.query(`
@@ -253,6 +262,9 @@ export class shiritoriRewrite1664092082396 implements MigrationInterface {
     await queryRunner.query(`
         ALTER TABLE "shiritori_channel"
         ADD CONSTRAINT "FK_07d843c719a3264ceeed905cba2" FOREIGN KEY ("lastWordId") REFERENCES "shiritori_word"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
+    `);
+    await queryRunner.query(`
+        ALTER TABLE "shiritori_channel" DROP COLUMN "chainStartedAt"
     `);
 
     // Create ShiritoriInflectionRoot table
