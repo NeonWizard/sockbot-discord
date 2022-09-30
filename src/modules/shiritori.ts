@@ -55,6 +55,7 @@ const checkWordValidity = async (message: Message, knownWordEnt: KnownWord, poin
         !inflectionRootEnt.inflections.find((inflection) => inflection.text === knownWordEnt.text)
       ) {
         inflectionRootEnt.inflections.push(knownWordEnt);
+        knownWordEnt.inflectionOf.push(inflectionRootEnt);
       }
       await inflectionRootEnt.save();
     }
@@ -130,7 +131,7 @@ const handleMessageChange = async (
     bot.logger.warn(
       "Received message change event in shiritori with no author data attached. Ignoring."
     );
-    await channel.send("don't edit or delete messages you little sluts");
+    await channel.send("don't edit or delete messages you little sluts. i'll getcha next time");
     return;
   }
   const user = await utils.fetchCreateUser(userID);

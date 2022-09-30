@@ -27,6 +27,9 @@ export const fetchCreateWord = async (word: string) => {
     wordEnt = new KnownWord();
     wordEnt.text = word;
     wordEnt.occurrences = 0;
+    wordEnt.inflections = [];
+    wordEnt.inflectionOf = [];
+    wordEnt.valid = null;
     await wordEnt.save();
   }
 
