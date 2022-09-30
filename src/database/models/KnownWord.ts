@@ -15,10 +15,10 @@ export class KnownWord extends BaseEntity {
   @Column({ type: "boolean", nullable: true })
   valid!: boolean | null;
 
-  @ManyToMany(() => KnownWord, (word) => word.inflections)
+  @ManyToMany(() => KnownWord, (word) => word.inflections, { onDelete: "CASCADE" })
   inflectionOf!: KnownWord[];
 
-  @ManyToMany(() => KnownWord, (word) => word.inflectionOf)
+  @ManyToMany(() => KnownWord, (word) => word.inflectionOf, { onDelete: "CASCADE" })
   @JoinTable({
     name: "known_word_inflections",
     joinColumn: {

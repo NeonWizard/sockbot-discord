@@ -158,7 +158,7 @@ export class shiritoriRewrite1664092082396 implements MigrationInterface {
     `);
     await queryRunner.query(`
         ALTER TABLE "known_word_inflections"
-        ADD CONSTRAINT "FK_af7e639d4650942f896109f887d" FOREIGN KEY ("inflection") REFERENCES "known_word"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
+        ADD CONSTRAINT "FK_af7e639d4650942f896109f887d" FOREIGN KEY ("inflection") REFERENCES "known_word"("id") ON DELETE CASCADE ON UPDATE NO ACTION
     `);
   }
 
