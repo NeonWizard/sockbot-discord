@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Generalized shiritori word storage, storing dictionary API results to reduce API calls
 - Updated dependencies
 - Changed "you can't afford that" messages to include more information, such as your current balance
+- Changed shiritori chain broken response to a neat embed
 
 ### Fixed
 

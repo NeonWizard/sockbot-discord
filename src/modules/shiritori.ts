@@ -1,4 +1,4 @@
-import { Message, PartialMessage } from "discord.js";
+import { EmbedBuilder, Message, PartialMessage } from "discord.js";
 import { Bot } from "../bot";
 import { KnownWord } from "../database/models/KnownWord";
 import { ShiritoriChannel } from "../database/models/ShiritoriChannel";
@@ -106,6 +106,23 @@ const addWord = async (channel: ShiritoriChannel, user: User, word: KnownWord): 
   await channel.save();
 };
 
+const createChainBrokenEmbed = (reason: string, chainLength: number, pointsLost: number) => {
+  return new EmbedBuilder()
+    .setColor(0xfc3838)
+    .setTitle("Shiritori chain broken")
+    .setDescription(`The shiritori chain was broken at a length of ${chainLength} words!`)
+    .setThumbnail("https://i.imgflip.com/69gmn2.png")
+    .setFields([
+      { name: "Reason", value: reason },
+      {
+        name: "Points lost",
+        value: `\`\`\`js\n${pointsLost} sockpoints lost\`\`\``,
+      },
+    ])
+    .setFooter({ text: "get fucked <3" })
+    .setTimestamp();
+};
+
 const handleMessageChange = async (
   bot: Bot,
   channelID: string,
@@ -145,6 +162,7 @@ const handleMessageChange = async (
   await user.save();
 
   // reset channel
+  const chainLength = channelEnt.chainLength;
   await channelEnt.resetChain();
 
   // log failure in UserHistory table
@@ -154,11 +172,13 @@ const handleMessageChange = async (
   userHistory.value1 = pointPenalty;
   await userHistory.save();
 
-  await channel.send(
-    `<@${user.discordID}> thought they were being sneaky by ${
-      deleted ? "deleting" : "editing"
-    } a message. thanks to THEM, the chain was broken, and they lost ${pointPenalty} sockpoints!!`
+  // send response
+  const embed = createChainBrokenEmbed(
+    `Chained word was ${deleted ? "deleted" : "edited"}.`,
+    chainLength,
+    pointPenalty
   );
+  await channel.send({ embeds: [embed] });
 };
 
 export default (bot: Bot): void => {
@@ -168,6 +188,9 @@ export default (bot: Bot): void => {
   client.on(
     "messageUpdate",
     async (oldMessage: Message | PartialMessage, newMessage: Message | PartialMessage) => {
+      // Bots can't participate in Shiritori. T-T
+      if (oldMessage.author?.bot || newMessage.author?.bot) return;
+
       const channelID = oldMessage.channel.id ?? newMessage.channel.id;
       const userID = oldMessage.author?.id ?? newMessage.author?.id;
       const createdAt = oldMessage.createdAt ?? newMessage.createdAt;
@@ -178,6 +201,9 @@ export default (bot: Bot): void => {
 
   // Prevent users from deleting messages
   client.on("messageDelete", async (message: Message | PartialMessage) => {
+    // Bots can't participate in Shiritori. T-T
+    if (message.author?.bot) return;
+
     const channelID = message.channel.id;
     const userID = message.author?.id;
     const createdAt = message.createdAt;
@@ -219,9 +245,8 @@ export default (bot: Bot): void => {
 
       // send response
       await message.react("❌");
-      await message.reply(
-        `<@${message.author.id}> broke the shiritori chain T-T\nthey lost: ${pointPenalty} sockpoints\nreason: ${err}\nthe chain was ${brokenLength} words long when SOMEONE broke it x.x`
-      );
+      const embed = createChainBrokenEmbed(err, brokenLength, pointPenalty);
+      await message.reply({ embeds: [embed] });
 
       return;
     }
