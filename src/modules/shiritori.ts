@@ -84,10 +84,6 @@ const checkWordValidity = async (message: Message, knownWordEnt: KnownWord, poin
 };
 
 const addWord = async (channel: ShiritoriChannel, user: User, word: KnownWord): Promise<void> => {
-  if (channel.chainLength === 0) {
-    channel.chainStartedAt = new Date();
-  }
-
   // Bump KnownWord occurrences
   word.occurrences += 1;
   await word.save();
