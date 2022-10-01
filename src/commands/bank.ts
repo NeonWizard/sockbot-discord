@@ -1,4 +1,4 @@
-import { CommandInteraction, SlashCommandBuilder } from "discord.js";
+import { CommandInteraction, EmbedBuilder, SlashCommandBuilder } from "discord.js";
 import { Bot } from "../bot";
 import { BotCommand } from "../interfaces";
 import * as utils from "../utils";
@@ -55,9 +55,25 @@ export const BankCommand: BotCommand = {
       user.sockpoints -= amount;
       user.bankBalance += amount;
       await user.save();
-      await interaction.reply(
-        `${amount} sockpoints deposited in your bank.\nBank: ${user.bankBalance}\nWallet: ${user.sockpoints}`
-      );
+
+      const embed = new EmbedBuilder()
+        .setColor(0x39c0fa)
+        .setTitle("Points deposited")
+        .setDescription(`You've deposited ${amount.toLocaleString()} sockpoints into your bank.`)
+        .setFields(
+          {
+            name: "New bank balance",
+            value: `\`\`\`js\n${user.bankBalance.toLocaleString()} sockpoints\`\`\``,
+          },
+          {
+            name: "New wallet balance",
+            value: `\`\`\`js\n${user.sockpoints.toLocaleString()} sockpoints\`\`\``,
+          }
+        )
+        .setFooter({ text: "get rich <3" })
+        .setTimestamp();
+
+      await interaction.reply({ embeds: [embed] });
     }
     // -- Withdrawing
     else if (interaction.options.getSubcommand() === "withdraw") {
@@ -68,9 +84,25 @@ export const BankCommand: BotCommand = {
       user.sockpoints += amount;
       user.bankBalance -= amount;
       await user.save();
-      await interaction.reply(
-        `${amount} sockpoints withdrawn from your bank.\nBank: ${user.bankBalance}\nWallet: ${user.sockpoints}`
-      );
+
+      const embed = new EmbedBuilder()
+        .setColor(0xfa7a34)
+        .setTitle("Points withdrawn")
+        .setDescription(`You've withdrawn ${amount.toLocaleString()} sockpoints from your bank.`)
+        .setFields(
+          {
+            name: "New bank balance",
+            value: `\`\`\`js\n${user.bankBalance.toLocaleString()} sockpoints\`\`\``,
+          },
+          {
+            name: "New wallet balance",
+            value: `\`\`\`js\n${user.sockpoints.toLocaleString()} sockpoints\`\`\``,
+          }
+        )
+        .setFooter({ text: "get rich <3" })
+        .setTimestamp();
+
+      await interaction.reply({ embeds: [embed] });
     }
   },
 };
