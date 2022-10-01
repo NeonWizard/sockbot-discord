@@ -1,4 +1,9 @@
-import { AttachmentBuilder, CommandInteraction, SlashCommandBuilder } from "discord.js";
+import {
+  AttachmentBuilder,
+  CommandInteraction,
+  EmbedBuilder,
+  SlashCommandBuilder,
+} from "discord.js";
 import path from "path";
 import { Bot } from "../bot";
 import { ActionType, UserHistory } from "../database/models/UserHistory";
@@ -30,11 +35,24 @@ export const DoubleOrNothingCommand: BotCommand = {
       userHistory.value1 = oldPoints;
       await userHistory.save();
 
-      await interaction.reply(
-        `<@${
-          interaction.user.id
-        }> DOUBLED BABY!! ${oldPoints.toLocaleString()} -> ${user.sockpoints.toLocaleString()}`
-      );
+      const embed = new EmbedBuilder()
+        .setColor(0xf2c30a)
+        .setTitle("POINTS DOUBLED!!")
+        .setDescription(`CONGRATS!!! YOU DOUBLED YOUR POINTS!!!`)
+        .setFields(
+          {
+            name: "Previous balance",
+            value: `\`\`\`js\n${oldPoints.toLocaleString()} sockpoints\`\`\``,
+          },
+          {
+            name: "New balance",
+            value: `\`\`\`js\n${user.sockpoints.toLocaleString()} sockpoints\`\`\``,
+          }
+        )
+        .setFooter({ text: "get rich <3" })
+        .setTimestamp();
+
+      await interaction.reply({ embeds: [embed] });
     } else {
       // -- Nothing
       const oldPoints = user.sockpoints;
