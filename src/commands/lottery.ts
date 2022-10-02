@@ -2,6 +2,7 @@ import {
   AttachmentBuilder,
   ChatInputCommandInteraction,
   CommandInteraction,
+  EmbedBuilder,
   SlashCommandBuilder,
 } from "discord.js";
 
@@ -47,16 +48,7 @@ const listTickets = async (
   const fetchAll = interaction.options.getBoolean("all") ?? false;
 
   // Generate verbose ticket objects
-  const verboseTickets = userTickets.map((ticket) => {
-    const vTicket = ticket.numbers.map((number) => ({
-      number: number,
-      matched: winningNumbersSet.has(number),
-    }));
-    return {
-      ticket: vTicket,
-      matches: vTicket.reduce((acc, ticket) => acc + +ticket.matched, 0),
-    };
-  });
+  const verboseTickets = utils.createVerboseTickets(userTickets, winningNumbersSet);
 
   // Sort tickets by number of matching numbers, descending
   verboseTickets.sort((ticket1, ticket2) => (ticket1.matches > ticket2.matches ? -1 : 1));
@@ -65,13 +57,7 @@ const listTickets = async (
   const response: string[] = [];
   const ticketLines: string[] = [];
   for (const [i, ticket] of verboseTickets.slice(0, fetchAll ? undefined : 10).entries()) {
-    const numbersString = ticket.ticket
-      .map((number) => {
-        const numberString = number.number.toString().padStart(2);
-        return number.matched ? `[${numberString}]` : ` ${numberString} `;
-      })
-      .join(" ");
-    ticketLines.push(`Ticket ${(i + 1).toString().padStart(2, "0")} // ${numbersString}`);
+    ticketLines.push(`Ticket ${(i + 1).toString().padStart(2, "0")} // ${ticket.stringLine}`);
     ticketLines.push("-".repeat(47));
   }
   ticketLines.pop(); // Remove last dash divider

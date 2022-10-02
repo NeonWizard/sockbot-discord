@@ -3,6 +3,8 @@ import fetch from "node-fetch";
 import * as Canvas from "canvas";
 import path from "path";
 import { KnownWord } from "../database/models/KnownWord";
+import { VerboseTicket } from "../interfaces/tickets";
+import { LotteryTicket } from "../database/models/LotteryTicket";
 
 // Fetches a user, or creates a new one if doesn't exist
 export const fetchCreateUser = async (discordID: string) => {
@@ -155,4 +157,35 @@ export const generateUniqueRandomArray = (min: number, max: number, length: numb
     if (!arr.includes(r)) arr.push(r);
   }
   return arr;
+};
+
+// Creates a VerboseTicket from a LotteryTicket database entity
+export const createVerboseTicket = (
+  ticket: LotteryTicket,
+  winningNumbers: Set<number>
+): VerboseTicket => {
+  const verboseNumbers = ticket.numbers.map((number) => ({
+    number,
+    matched: winningNumbers.has(number),
+  }));
+
+  return {
+    matches: verboseNumbers.reduce((acc, cur) => acc + +cur.matched, 0),
+    numbers: verboseNumbers,
+    stringLine: verboseNumbers
+      .map((vNum) => {
+        const numString = vNum.number.toString().padStart(2);
+        return vNum.matched ? `[${numString}]` : ` ${numString} `;
+      })
+      .join(" "),
+    ticket: ticket,
+  };
+};
+
+// Creates an array of VerboseTickets from an array of LotteryTicket database entities
+export const createVerboseTickets = (
+  tickets: LotteryTicket[],
+  winningNumbers: Set<number>
+): VerboseTicket[] => {
+  return tickets.map((ticket) => createVerboseTicket(ticket, winningNumbers));
 };

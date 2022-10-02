@@ -7,6 +7,7 @@ import { Bot } from "../bot";
 import { AttachmentBuilder } from "discord.js";
 import { User } from "../database/models/User";
 import { ActionType, UserHistory } from "../database/models/UserHistory";
+import { VerboseTicket } from "../interfaces/tickets";
 
 const PRIZE_POOL = constants.LOTTERY_PRIZE_POOL;
 
@@ -42,21 +43,14 @@ const runLottery = async (bot: Bot, lottery: Lottery) => {
 
     // Store map of user IDs to their winning tickets
     const userWinningTickets: {
-      [userID: number]: { ticket: { number: number; matched: boolean }[]; matches: number }[];
+      [userID: number]: VerboseTicket[];
     } = {};
 
     // Run all tickets
     for (const ticket of lottery.tickets) {
-      const vTicket = ticket.numbers.map((number) => ({
-        number: number,
-        matched: winningNumbersSet.has(number),
-      }));
-      const verboseTicket = {
-        ticket: vTicket,
-        matches: vTicket.reduce((acc, ticket) => acc + +ticket.matched, 0),
-      };
+      const verboseTicket = utils.createVerboseTicket(ticket, winningNumbersSet);
 
-      if (!verboseTicket.ticket.some((x) => x.matched)) continue;
+      if (!verboseTicket.numbers.some((x) => x.matched)) continue;
 
       if (userWinningTickets[ticket.user.id] === undefined) {
         userWinningTickets[ticket.user.id] = [];
@@ -87,14 +81,11 @@ const runLottery = async (bot: Bot, lottery: Lottery) => {
           const maxPrizeTextSize =
             PRIZE_POOL[sortedWinningTickets[0].matches].toLocaleString().length;
 
-          response.push(
-            `${points} sockpoints ${" ".repeat(Math.max(0, maxPrizeTextSize - points.length))} - ` +
-              ticket.ticket.reduce((acc, number) => {
-                if (acc != "") acc += " ";
-                const numberString = number.number.toString().padStart(2);
-                return acc + (number.matched ? `[${numberString}]` : ` ${numberString} `);
-              }, "")
-          );
+          const rewardString = `${points} sockpoints ${" ".repeat(
+            Math.max(0, maxPrizeTextSize - points.length)
+          )}`;
+
+          response.push(`${rewardString} - ${ticket.stringLine}`);
         }
 
         // Build UserHistory entry
@@ -142,7 +133,7 @@ export default (bot: Bot): void => {
     // Handle lotteries at 8PM every day
     cron.schedule(
       "0 20 * * *",
-      // "*/30 * * * * *", // for testing
+      // "*/10 * * * * *", // for testing
       async () => {
         bot.logger.info("Generating daily lottery numbers.");
 
