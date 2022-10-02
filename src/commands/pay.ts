@@ -1,4 +1,4 @@
-import { CommandInteraction, SlashCommandBuilder } from "discord.js";
+import { CommandInteraction, EmbedBuilder, SlashCommandBuilder } from "discord.js";
 
 import { Bot } from "../bot";
 import { ActionType, UserHistory } from "../database/models/UserHistory";
@@ -59,8 +59,19 @@ export const PayCommand: BotCommand = {
     userHistory.value1 = pointsToTransfer;
     await userHistory.save();
 
-    await interaction.reply(
-      `you transfererd ${pointsToTransfer} sockpoints to <@${victimDJS.id}>!!`
-    );
+    const embed = new EmbedBuilder()
+      .setColor(0x3dff87)
+      .setTitle("Points transferred")
+      .setDescription(
+        `You've transferred ${pointsToTransfer.toLocaleString()} sockpoints to <@${victimDJS.id}>.`
+      )
+      .setFields({
+        name: "New wallet balance",
+        value: `\`\`\`js\n${sender.sockpoints.toLocaleString()} sockpoints\`\`\``,
+      })
+      .setFooter({ text: "get stingy <3" })
+      .setTimestamp();
+
+    await interaction.reply({ embeds: [embed] });
   },
 };
