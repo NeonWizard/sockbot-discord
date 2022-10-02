@@ -121,10 +121,28 @@ const buyTickets = async (
   userHistory.value2 = cost;
   await userHistory.save();
 
+  // create VerboseTickets
+  const verboseTickets = utils.createVerboseTickets(tickets, new Set(lottery.winningNumbers));
+
   // reply to user
-  await interaction.reply(
-    `${amount} tickets were purchased for ${cost.toLocaleString()} sockpoints.`
-  );
+  const embed = new EmbedBuilder()
+    .setColor(0xffbf00)
+    .setTitle("Tickets bought")
+    .setDescription(`You bought ${amount} lottery tickets for this week!`)
+    .setThumbnail("https://img-comment-fun.9cache.com/media/aXrj2bV/a49kEq7D_700w_0.jpg")
+    .setFields([
+      { name: "Cost", value: `${cost.toLocaleString()} sockpoints` },
+      {
+        name: "New tickets",
+        value: `\`\`\`css\n${verboseTickets
+          .map((vTicket) => `//` + vTicket.stringLine)
+          .join(`\n${"-".repeat(36)}\n`)}\`\`\``,
+      },
+    ])
+    .setFooter({ text: "get lucky <3" })
+    .setTimestamp();
+
+  await interaction.reply({ embeds: [embed] });
 };
 
 export const LotteryCommand: BotCommand = {
