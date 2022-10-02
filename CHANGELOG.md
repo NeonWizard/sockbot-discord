@@ -11,13 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added Guild database model for separating shiritori channels and lotteries between guilds
 - Added check in shiritori channel for editing or deleting messages, which will incur a penalty and break the chain
+- Added embed responses
+  - Bank deposit/withdrawal
+  - DoubleOrNothing winnings
+  - Leaderboard command
+  - Lottery ticket purchases (includes your newly purchased ticket numbers too!)
+  - Payment command
+  - Stats command
 
 ### Changed
 
 - Generalized shiritori word storage, storing dictionary API results to reduce API calls
 - Updated dependencies
 - Changed "you can't afford that" messages to include more information, such as your current balance
-- Changed shiritori chain broken response to a neat embed
+- Changed shiritori chain broken response to an organized embed
 
 ### Fixed
 
