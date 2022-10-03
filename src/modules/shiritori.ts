@@ -232,14 +232,21 @@ export default (bot: Bot): void => {
 
     const knownWordEnt = await utils.fetchCreateWord(message.content.toLowerCase());
     let pointAward = 0;
+    let wordIsValid = false;
 
     // Count occurrences of this word in this ShiritoriChannel (either said directly or is an inflection/inflectionOf)
-    // Don't worry about it
-    const wordOccurrences = +(
-      await ShiritoriWord.query(
-        `SELECT COUNT(*) FROM	(SELECT kw.* FROM shiritori_word sw	INNER JOIN known_word kw ON kw.id = sw."wordId" UNION	SELECT known_word.* FROM known_word	INNER JOIN (SELECT kwi."inflectionOf", kwi.inflection FROM shiritori_word sw INNER JOIN known_word kw ON kw.id = sw."wordId" INNER JOIN known_word_inflections kwi ON kwi."inflectionOf" = kw.id OR kwi.inflection = kw.id) j	ON id = j."inflectionOf" OR id = j.inflection) c WHERE c."text" = '${knownWordEnt.text}'`
-      )
-    )[0].count;
+    // This has to be done before the word is added to the ShiritoriChannel (addWord())
+    let wordIsUnique =
+      (
+        await ShiritoriWord.query(`
+          SELECT COUNT(*) FROM shiritori_word sw
+          INNER JOIN known_word kw
+            ON kw.id = sw."wordId"
+          WHERE
+            sw."channelId" = '${channel.id}' AND
+            kw."text" = '${knownWordEnt.text}'
+        `)
+      )[0].count === "0";
 
     // Add word to ShiritoriChannel
     await addWord(channel, user, knownWordEnt);
@@ -250,15 +257,37 @@ export default (bot: Bot): void => {
     // Bonus points based on chain length
     pointAward += Math.min(10, Math.floor(channel.chainLength / 3) + 1);
 
-    // Check validity of words for bonus points
+    // Check validity of words. Invalid words receive a penalty and unique valid words receive a bonus
     if (process.env.SHIRITORI_WORD_CHECK === "true") {
-      const valid = await checkWordValidity(knownWordEnt);
-      if (!valid) {
+      wordIsValid = await checkWordValidity(knownWordEnt);
+      if (!wordIsValid) {
         pointAward = Math.max(0, pointAward - 5);
       } else {
         await message.react("📖");
-        // Only award uniqueness bonus if word is valid
-        if (wordOccurrences === 0) {
+
+        // We already calculated if the word is unique, now check if the word's inflections/inflectionOfs are unique
+        // This required calling the dictionary API first so we know .inflection and .inflectionOf are set
+        if (wordIsUnique) {
+          const variants = knownWordEnt.inflectionOf.concat(knownWordEnt.inflections);
+          if (variants.length > 0) {
+            const occurrences = +(
+              await ShiritoriWord.query(`
+                SELECT COUNT(*) FROM shiritori_word sw
+                INNER JOIN known_word kw
+                  ON kw.id = sw."wordId"
+                WHERE
+                  sw."channelId" = '${channel.id}' AND
+                  kw."text" IN (${variants.map((variant) => `'${variant.text}'`).join(", ")})
+              `)
+            )[0].count;
+
+            if (occurrences !== 0) {
+              wordIsUnique = false;
+            }
+          }
+        }
+
+        if (wordIsUnique) {
           pointAward = 30;
         }
       }
@@ -285,7 +314,7 @@ export default (bot: Bot): void => {
       await message.react(utils.numberToEmoji(+digit));
     }
 
-    if (wordOccurrences === 0) {
+    if (wordIsValid && wordIsUnique) {
       await message.react("⭐");
     }
   });
