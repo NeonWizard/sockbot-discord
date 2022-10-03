@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## Added
+## [1.4.0] - 2022-10-03
+
+### Added
 
 - Added Guild database model for separating shiritori channels and lotteries between guilds
 - Added check in shiritori channel for editing or deleting messages, which will incur a penalty and break the chain
@@ -99,7 +101,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Shiritori word must now be at least two letters
 
-[unreleased]: https://github.com/NeonWizard/sockbot-discord/compare/v1.3.0...HEAD
+[unreleased]: https://github.com/NeonWizard/sockbot-discord/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/NeonWizard/sockbot-discord/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/NeonWizard/sockbot-discord/compare/v1.2.2...v1.3.0
 [1.2.2]: https://github.com/NeonWizard/sockbot-discord/compare/v1.2.1...v1.2.2
 [1.2.1]: https://github.com/NeonWizard/sockbot-discord/compare/v1.2.0...v1.2.1
