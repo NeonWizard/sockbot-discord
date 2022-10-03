@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Lottery } from "./Lottery";
 import { ShiritoriChannel } from "./ShiritoriChannel";
 
@@ -10,11 +10,9 @@ export class Guild extends BaseEntity {
   @Column()
   guildID!: string;
 
-  @OneToOne(() => ShiritoriChannel)
-  @JoinColumn()
-  shiritoriChannel!: ShiritoriChannel;
+  @OneToMany(() => ShiritoriChannel, (shiritoriChannel) => shiritoriChannel.guild)
+  shiritoriChannels!: ShiritoriChannel[];
 
-  @OneToOne(() => Lottery)
-  @JoinColumn()
+  @OneToOne(() => Lottery, (lottery) => lottery.guild)
   lottery!: Lottery;
 }

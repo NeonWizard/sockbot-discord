@@ -18,7 +18,7 @@ export class ShiritoriChannel extends BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @OneToOne(() => Guild, (guild) => guild.shiritoriChannel)
+  @ManyToOne(() => Guild, (guild) => guild.shiritoriChannels, { nullable: false })
   guild!: Guild;
 
   @Column()
