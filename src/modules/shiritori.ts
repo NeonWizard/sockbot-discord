@@ -224,7 +224,7 @@ export default (bot: Bot): void => {
     // Check validity of message
     const err = testMessage(message, channel, channel.lastWord);
     if (err !== undefined) {
-      const pointPenalty = Math.max(10, channel.chainLength * 1);
+      const pointPenalty = Math.max(10, channel.chainLength * 10);
       const brokenLength = channel.chainLength;
 
       // penalize user
