@@ -71,11 +71,13 @@ const checkWordValidity = async (message: Message, knownWordEnt: KnownWord, poin
 
     // 30 point bonus for unique words (unique in this channel)
     // Don't worry about it
-    const occurrences = await ShiritoriWord.query(
-      `SELECT COUNT(*) FROM	(SELECT kw.* FROM shiritori_word sw	INNER JOIN known_word kw ON kw.id = sw."wordId" UNION	SELECT known_word.* FROM known_word	INNER JOIN (SELECT kwi."inflectionOf", kwi.inflection FROM shiritori_word sw INNER JOIN known_word kw ON kw.id = sw."wordId" INNER JOIN known_word_inflections kwi ON kwi."inflectionOf" = kw.id OR kwi.inflection = kw.id) j	ON id = j."inflectionOf" OR id = j.inflection) c WHERE c."text" = '${knownWordEnt.text}'`
-    );
+    const occurrences = (
+      await ShiritoriWord.query(
+        `SELECT COUNT(*) FROM	(SELECT kw.* FROM shiritori_word sw	INNER JOIN known_word kw ON kw.id = sw."wordId" UNION	SELECT known_word.* FROM known_word	INNER JOIN (SELECT kwi."inflectionOf", kwi.inflection FROM shiritori_word sw INNER JOIN known_word kw ON kw.id = sw."wordId" INNER JOIN known_word_inflections kwi ON kwi."inflectionOf" = kw.id OR kwi.inflection = kw.id) j	ON id = j."inflectionOf" OR id = j.inflection) c WHERE c."text" = '${knownWordEnt.text}'`
+      )
+    )[0].count;
 
-    if (occurrences === 0) {
+    if (occurrences === "0") {
       pointAward = 30;
     }
   }
