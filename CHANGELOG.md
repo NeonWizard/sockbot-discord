@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed problems when sending a second shiritori word before first word has been processed by the dictionary API
 - Fixed dictionary API returning inflections that contain dashes or other special characters
+- Potentially fixed rare issue where /points text is rendered with a skinny font
 
 ## [1.4.0] - 2022-10-03
 

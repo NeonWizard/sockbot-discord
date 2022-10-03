@@ -16,7 +16,7 @@ export const PointsCommand: BotCommand = {
     const user = await utils.fetchCreateUser(interaction.user.id);
 
     Canvas.registerFont(path.join(__dirname, "../static/fonts/nk57-monospace-no-eb.ttf"), {
-      family: "nk57",
+      family: "nk57-eb",
     });
 
     const canvas = Canvas.createCanvas(680, 678);
@@ -27,7 +27,7 @@ export const PointsCommand: BotCommand = {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-    ctx.font = "69px nk57";
+    ctx.font = "69px nk57-eb";
     ctx.fillStyle = "white";
     ctx.strokeStyle = "black";
     ctx.lineWidth = 7;

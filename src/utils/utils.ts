@@ -114,7 +114,7 @@ export const factorial = (x: number) => {
 
 export const generateLotteryImage = async (latestNumber: number, previousNumbers: number[]) => {
   Canvas.registerFont(path.join(__dirname, "../static/fonts/nk57-monospace-no-lt.ttf"), {
-    family: "nk57",
+    family: "nk57-lt",
   });
 
   const canvas = Canvas.createCanvas(498, 393);
@@ -127,7 +127,7 @@ export const generateLotteryImage = async (latestNumber: number, previousNumbers
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-  ctx.font = "68px nk57";
+  ctx.font = "68px nk57-lt";
   ctx.fillStyle = "white";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
