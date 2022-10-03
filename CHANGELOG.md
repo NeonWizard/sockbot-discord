@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed shiritori counting words that are part of a valid phrase as valid when not otherwise valid on their own
 - Fixed possibility of getting duplicate numbers in lottery tickets
 - Fixed lottery not actually paying users their winnings
+- Temporary fix for bot going offline (discordjs internal websocket going zombie mode) by checking ping every so often. If it remains the same for an unusual period of time, the bot exits so it can restart
 
 ## [1.3.0] - 2022-09-23
 
