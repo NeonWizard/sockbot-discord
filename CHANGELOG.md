@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Changed shiritori chain breaking penalty from just `length` to `length * 10`
 
+### Fixed
+
+- Fixed problems when sending a second shiritori word before first word has been processed by the dictionary API
+
 ## [1.4.0] - 2022-10-03
 
 ### Added

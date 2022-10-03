@@ -43,7 +43,7 @@ const testMessage = (
   }
 };
 
-const checkWordValidity = async (message: Message, knownWordEnt: KnownWord, pointAward: number) => {
+const checkWordValidity = async (knownWordEnt: KnownWord) => {
   if (knownWordEnt.valid === null) {
     // If word hasn't been dictionary checked before, check with API and also add all inflections to KnownWords
     const inflectionRoots = await utils.getWordInflectionRoots(knownWordEnt.text);
@@ -63,26 +63,7 @@ const checkWordValidity = async (message: Message, knownWordEnt: KnownWord, poin
     await knownWordEnt.save();
   }
 
-  if (!knownWordEnt.valid) {
-    // -5 point penalty for invalid words
-    pointAward = Math.max(0, pointAward - 5);
-  } else {
-    await message.react("📖");
-
-    // 30 point bonus for unique words (unique in this channel)
-    // Don't worry about it
-    const occurrences = (
-      await ShiritoriWord.query(
-        `SELECT COUNT(*) FROM	(SELECT kw.* FROM shiritori_word sw	INNER JOIN known_word kw ON kw.id = sw."wordId" UNION	SELECT known_word.* FROM known_word	INNER JOIN (SELECT kwi."inflectionOf", kwi.inflection FROM shiritori_word sw INNER JOIN known_word kw ON kw.id = sw."wordId" INNER JOIN known_word_inflections kwi ON kwi."inflectionOf" = kw.id OR kwi.inflection = kw.id) j	ON id = j."inflectionOf" OR id = j.inflection) c WHERE c."text" = '${knownWordEnt.text}'`
-      )
-    )[0].count;
-
-    if (occurrences === "0") {
-      pointAward = 30;
-    }
-  }
-
-  return pointAward;
+  return knownWordEnt.valid;
 };
 
 const addWord = async (channel: ShiritoriChannel, user: User, word: KnownWord): Promise<void> => {
@@ -249,19 +230,39 @@ export default (bot: Bot): void => {
       return;
     }
 
-    await message.react("✅");
     const knownWordEnt = await utils.fetchCreateWord(message.content.toLowerCase());
     let pointAward = 0;
+
+    // Count occurrences of this word in this ShiritoriChannel (either said directly or is an inflection/inflectionOf)
+    // Don't worry about it
+    const wordOccurrences = +(
+      await ShiritoriWord.query(
+        `SELECT COUNT(*) FROM	(SELECT kw.* FROM shiritori_word sw	INNER JOIN known_word kw ON kw.id = sw."wordId" UNION	SELECT known_word.* FROM known_word	INNER JOIN (SELECT kwi."inflectionOf", kwi.inflection FROM shiritori_word sw INNER JOIN known_word kw ON kw.id = sw."wordId" INNER JOIN known_word_inflections kwi ON kwi."inflectionOf" = kw.id OR kwi.inflection = kw.id) j	ON id = j."inflectionOf" OR id = j.inflection) c WHERE c."text" = '${knownWordEnt.text}'`
+      )
+    )[0].count;
+
+    // Add word to ShiritoriChannel
+    await addWord(channel, user, knownWordEnt);
+
+    // By this point, once the green check mark shows up users should be able to send another word without problems
+    await message.react("✅");
 
     // Bonus points based on chain length
     pointAward += Math.min(10, Math.floor(channel.chainLength / 3) + 1);
 
     // Check validity of words for bonus points
     if (process.env.SHIRITORI_WORD_CHECK === "true") {
-      pointAward = await checkWordValidity(message, knownWordEnt, pointAward);
+      const valid = await checkWordValidity(knownWordEnt);
+      if (!valid) {
+        pointAward = Math.max(0, pointAward - 5);
+      } else {
+        await message.react("📖");
+        // Only award uniqueness bonus if word is valid
+        if (wordOccurrences === 0) {
+          pointAward = 30;
+        }
+      }
     }
-
-    await addWord(channel, user, knownWordEnt);
 
     user.sockpoints += pointAward;
     await user.save();
@@ -284,7 +285,7 @@ export default (bot: Bot): void => {
       await message.react(utils.numberToEmoji(+digit));
     }
 
-    if (pointAward === 30) {
+    if (wordOccurrences === 0) {
       await message.react("⭐");
     }
   });
