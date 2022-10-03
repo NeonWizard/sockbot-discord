@@ -118,8 +118,8 @@ export const StatsCommand: BotCommand = {
           value: `
             Points won: ${stats.GambleStats.pointsWon.toLocaleString()}
             Points lost: ${stats.GambleStats.pointsLost.toLocaleString()}
-            Won: ${stats.GambleStats.timesWon.toLocaleString()}
-            Lost: ${stats.GambleStats.timesLost.toLocaleString()}
+            Times won: ${stats.GambleStats.timesWon.toLocaleString()}
+            Times lost: ${stats.GambleStats.timesLost.toLocaleString()}
           `,
           inline: true,
         },
