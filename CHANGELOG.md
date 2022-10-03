@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed shiritori counting words that are part of a valid phrase as valid when not otherwise valid on their own
 - Fixed possibility of getting duplicate numbers in lottery tickets
+- Fixed lottery not actually paying users their winnings
 
 ## [1.3.0] - 2022-09-23
 

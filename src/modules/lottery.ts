@@ -88,6 +88,9 @@ const runLottery = async (bot: Bot, lottery: Lottery) => {
           response.push(`${rewardString} - ${ticket.stringLine}`);
         }
 
+        // Reward player
+        user.sockpoints += PRIZE_POOL[ticket.matches];
+
         // Build UserHistory entry
         const userHistory = new UserHistory();
         userHistory.user = user;
@@ -97,6 +100,8 @@ const runLottery = async (bot: Bot, lottery: Lottery) => {
         await userHistory.save();
       }
       response.push("```");
+
+      await user.save();
 
       await channel.send(response.join("\n"));
     }
