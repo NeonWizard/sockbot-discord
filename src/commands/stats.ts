@@ -1,7 +1,7 @@
-import { CommandInteraction, SlashCommandBuilder } from "discord.js";
+import { CommandInteraction, EmbedBuilder, SlashCommandBuilder } from "discord.js";
 
 import { Bot } from "../bot";
-import { UserHistory } from "../database/models/UserHistory";
+import { ActionType, UserHistory } from "../database/models/UserHistory";
 import { BotCommand } from "../interfaces";
 import * as utils from "../utils";
 
@@ -23,6 +23,11 @@ type Stats = {
     pointsLost: number;
     numberOfGoodWords: number;
     numberOfChainBreakers: number;
+  };
+  LotteryStats: {
+    ticketsBought: number;
+    winningTickets: number;
+    pointsWon: number;
   };
 };
 
@@ -58,47 +63,81 @@ export const StatsCommand: BotCommand = {
         numberOfGoodWords: 0,
         numberOfChainBreakers: 0,
       },
+      LotteryStats: {
+        ticketsBought: 0,
+        winningTickets: 0,
+        pointsWon: 0,
+      },
     };
 
     for (const historyItem of history) {
       switch (historyItem.action) {
-        case "doubleornothing_win":
+        case ActionType.DOUBLEORNOTHING_WIN:
           stats.GambleStats.pointsWon += historyItem.value1 ?? 0;
           stats.GambleStats.timesWon += 1;
           break;
-        case "doubleornothing_loss":
+        case ActionType.DOUBLEORNOTHING_LOSS:
           stats.GambleStats.pointsLost += historyItem.value1 ?? 0;
           stats.GambleStats.timesLost += 1;
           break;
-        case "shiritori":
+        case ActionType.SHIRITORI:
           stats.ShiritoriStats.pointsEarned += historyItem.value1 ?? 0;
           stats.ShiritoriStats.numberOfGoodWords += 1;
           break;
-        case "shiritori_fail":
+        case ActionType.SHIRITORI_FAIL:
           stats.ShiritoriStats.pointsLost += historyItem.value1 ?? 0;
           stats.ShiritoriStats.numberOfChainBreakers += 1;
           break;
-        case "pay":
+        case ActionType.PAY:
           break;
+        case ActionType.LOTTERY_TICKET_PURCHASE:
+          stats.LotteryStats.ticketsBought += historyItem.value1 ?? 0;
+          break;
+        case ActionType.LOTTERY_WIN:
+          stats.LotteryStats.winningTickets += 1;
+          stats.LotteryStats.pointsWon += historyItem.value2 ?? 0;
       }
     }
 
-    const response = [];
+    const embed = new EmbedBuilder()
+      .setColor(0x5c7d8a)
+      // .setTitle("Sock stats")
+      .setFields(
+        {
+          name: "Shiritori stats",
+          value: `
+            Points earned: ${stats.ShiritoriStats.pointsEarned.toLocaleString()}
+            Points lost: ${stats.ShiritoriStats.pointsLost.toLocaleString()}
+            # of good words: ${stats.ShiritoriStats.numberOfGoodWords.toLocaleString()}
+            # of chain breakers: ${stats.ShiritoriStats.numberOfChainBreakers.toLocaleString()}
+          `,
+          inline: true,
+        },
+        {
+          name: "Double or nothing stats",
+          value: `
+            Points won: ${stats.GambleStats.pointsWon.toLocaleString()}
+            Points lost: ${stats.GambleStats.pointsLost.toLocaleString()}
+            Won: ${stats.GambleStats.timesWon.toLocaleString()}
+            Lost: ${stats.GambleStats.timesLost.toLocaleString()}
+          `,
+          inline: true,
+        },
+        { name: "\u200b", value: "\u200b", inline: true },
+        {
+          name: "Lottery stats",
+          value: `
+            Total tickets purchased: ${stats.LotteryStats.ticketsBought.toLocaleString()}
+            Total winning tickets: ${stats.LotteryStats.winningTickets.toLocaleString()}
+            Points won: ${stats.LotteryStats.pointsWon.toLocaleString()}
+          `,
+          inline: true,
+        },
+        { name: "\u200b", value: "\u200b", inline: true }
+      )
+      .setFooter({ text: "get informed <3" })
+      .setTimestamp();
 
-    response.push("-- Double Or Nothing Stats");
-    response.push(`Points Won: ${stats.GambleStats.pointsWon}`);
-    response.push(`Times Won: ${stats.GambleStats.timesWon}`);
-    response.push(`Points Lost: ${stats.GambleStats.pointsLost}`);
-    response.push(`Times Lost: ${stats.GambleStats.timesLost}`);
-
-    response.push("");
-
-    response.push("-- Shiritori Stats");
-    response.push(`Points Earned: ${stats.ShiritoriStats.pointsEarned}`);
-    response.push(`# of good words: ${stats.ShiritoriStats.numberOfGoodWords}`);
-    response.push(`Points Lost: ${stats.ShiritoriStats.pointsLost}`);
-    response.push(`Chain breakers: ${stats.ShiritoriStats.numberOfChainBreakers}`);
-
-    interaction.reply(response.join("\n"));
+    await interaction.reply({ embeds: [embed] });
   },
 };
