@@ -75,7 +75,9 @@ export const getWordInflectionRoots = async (word: string): Promise<string[]> =>
   }
 
   const deduplicatedInflections = [...new Set(inflections)];
-  const wordsOnly = deduplicatedInflections.filter((inflection) => !inflection.includes(" "));
+  const wordsOnly = deduplicatedInflections
+    .map((inflection) => inflection.normalize("NFD").replace(/[\u0300-\u036f]/g, "")) // remove accents/diacritics
+    .filter((inflection) => /[a-zA-Z]/.test(inflection)); // limit to alphabetic only
 
   return wordsOnly;
 };
