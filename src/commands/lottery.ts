@@ -135,7 +135,7 @@ const buyTickets = async (
       {
         name: "New tickets",
         value: `\`\`\`css\n${verboseTickets
-          .map((vTicket) => `//` + vTicket.stringLine)
+          .map((vTicket) => "// " + vTicket.stringLine)
           .join(`\n${"-".repeat(36)}\n`)}\`\`\``,
       },
     ])
