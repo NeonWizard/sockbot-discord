@@ -5,6 +5,7 @@ import { LotteryCommand } from "./lottery";
 import { PayCommand } from "./pay";
 import { PingCommand } from "./ping";
 import { PointsCommand } from "./points";
+import { ShopCommand } from "./shop";
 import { StatsCommand } from "./stats";
 
 export const commands = [
@@ -15,5 +16,6 @@ export const commands = [
   PayCommand,
   PingCommand,
   PointsCommand,
+  ShopCommand,
   StatsCommand,
 ];
