@@ -49,7 +49,7 @@ const checkWSHealth = async (bot: Bot) => {
 export default (bot: Bot): void => {
   const client = bot.client;
 
-  client.on("ready", async () => {
+  client.on("initialized", async () => {
     // Poll websocket health every 30 minutes
     // cron.schedule(
     //   "*/30 * * * *",
@@ -59,8 +59,12 @@ export default (bot: Bot): void => {
     //   { timezone: "America/Los_Angeles" }
     // );
 
-    // Kick off first websocket health checker,
-    // which should reschedule another instance of itself as needed
-    checkWSHealth(bot);
+    // Give the bot 5 seconds to stabilize itself before beginning WS health checker
+    setTimeout(() => {
+      bot.logger.info("Starting WS health loop...");
+      // Kick off first websocket health checker,
+      // which should reschedule another instance of itself as needed
+      checkWSHealth(bot);
+    }, 5000);
   });
 };

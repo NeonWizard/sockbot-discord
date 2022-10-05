@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixed WSPATCH hotfix module not activating T-T
+
 ## [1.4.1] - 2022-10-03
 
 ### Changed
