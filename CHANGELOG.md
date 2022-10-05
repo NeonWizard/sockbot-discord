@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.2] - 2022-10-05
+
 ### Fixed
 
 - Fixed WSPATCH hotfix module not activating T-T
@@ -117,7 +119,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Shiritori word must now be at least two letters
 
-[unreleased]: https://github.com/NeonWizard/sockbot-discord/compare/v1.4.1...HEAD
+[unreleased]: https://github.com/NeonWizard/sockbot-discord/compare/v1.4.2...HEAD
+[1.4.1]: https://github.com/NeonWizard/sockbot-discord/compare/v1.4.1...v1.4.2
 [1.4.1]: https://github.com/NeonWizard/sockbot-discord/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/NeonWizard/sockbot-discord/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/NeonWizard/sockbot-discord/compare/v1.2.2...v1.3.0
