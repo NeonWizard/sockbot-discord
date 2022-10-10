@@ -133,8 +133,9 @@ const buyTickets = async (
     .setFields([
       { name: "Cost", value: `${cost.toLocaleString()} sockpoints` },
       {
-        name: "New tickets",
+        name: "New tickets (output limited to 10)",
         value: `\`\`\`css\n${verboseTickets
+          .slice(0, 10)
           .map((vTicket) => "// " + vTicket.stringLine)
           .join(`\n${"-".repeat(36)}\n`)}\`\`\``,
       },
