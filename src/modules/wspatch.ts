@@ -8,8 +8,6 @@ let timeToNextCheck = STARTING_CHECK_TIME; // ignore the camelcase inconsistency
 let lastPing = -1; // last websocket ping recorded
 
 const checkWSHealth = async (bot: Bot) => {
-  bot.logger.info("Polling DiscordJS internal websocket health.");
-
   const client = bot.client;
 
   // Check connection status
@@ -37,6 +35,9 @@ const checkWSHealth = async (bot: Bot) => {
         );
         process.exit(0);
       }
+      bot.logger.warning(
+        "Amogus sus... ping remained the same as the last check. Checking again twice as soon."
+      );
     } else {
       timeToNextCheck = STARTING_CHECK_TIME;
     }
