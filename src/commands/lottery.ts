@@ -5,6 +5,7 @@ import {
   EmbedBuilder,
   SlashCommandBuilder,
 } from "discord.js";
+import path from "node:path";
 
 import { Bot } from "../bot";
 import { LOTTERY_POOL_SIZE, LOTTERY_PRIZE_POOL, LOTTERY_TICKET_COST } from "../constants";
@@ -125,11 +126,12 @@ const buyTickets = async (
   const verboseTickets = utils.createVerboseTickets(tickets, new Set(lottery.winningNumbers));
 
   // reply to user
+  const thumbnail = new AttachmentBuilder(path.join(__dirname, "../static/images/smilecat.jpg"));
   const embed = new EmbedBuilder()
     .setColor(0xffbf00)
     .setTitle("Tickets bought")
     .setDescription(`You bought ${amount} lottery tickets for this week!`)
-    .setThumbnail("https://img-comment-fun.9cache.com/media/aXrj2bV/a49kEq7D_700w_0.jpg")
+    .setThumbnail("attachment://smilecat.jpg")
     .setFields([
       { name: "Cost", value: `${cost.toLocaleString()} sockpoints` },
       {
@@ -143,7 +145,7 @@ const buyTickets = async (
     .setFooter({ text: "get lucky <3" })
     .setTimestamp();
 
-  await interaction.reply({ embeds: [embed] });
+  await interaction.reply({ embeds: [embed], files: [thumbnail] });
 };
 
 export const LotteryCommand: BotCommand = {
