@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fixed /lottery tickets buy command erroring when buying too many tickets
+- Fixed lottery not resetting properly at end of week
 
 ## [1.4.2] - 2022-10-05
 

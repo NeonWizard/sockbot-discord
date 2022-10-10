@@ -15,7 +15,7 @@ export class Lottery extends BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @OneToOne(() => Guild, (guild) => guild.lottery, { nullable: false })
+  @OneToOne(() => Guild, (guild) => guild.lottery, { nullable: false, eager: true })
   @JoinColumn()
   guild!: Guild;
 
