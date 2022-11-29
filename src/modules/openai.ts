@@ -36,7 +36,7 @@ export default (bot: Bot): void => {
 
   client.on("messageCreate", async (message: Message) => {
     if (message.type !== MessageType.Default && message.type !== MessageType.Reply) return;
-    if (message.author.id !== "193469296557424640") return;
+    // if (message.author.id !== "193469296557424640") return;
     if (message.type !== MessageType.Reply && !message.content.toLowerCase().includes("skromp"))
       return;
 
