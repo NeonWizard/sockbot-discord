@@ -30,6 +30,8 @@
 | DICTIONARY_APP_ID    | App ID for Oxford dictionary account                                            |
 | DICTIONARY_APP_KEY   | App key for Oxford dictionary account                                           |
 | SHIRITORI_WORD_CHECK | Set to "true" to enable checking the dictionary API for shiritori word validity |
+| OPENAI_DISABLE       | Set to "true" to disable using the OpenAI API                                   |
+| OPENAI_API_KEY       | API key for OpenAI                                                              |
 
 ## Helpful Commands
 
