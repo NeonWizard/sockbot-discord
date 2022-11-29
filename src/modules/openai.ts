@@ -49,19 +49,32 @@ export default (bot: Bot): void => {
     }
     cooldown = OPENAI_COOLDOWN;
 
+    // pre-processing input
+    let input: string = message.content;
+    if (!input.match(/.*[.,:!?]/)) {
+      input += ".";
+    }
+    input = input.replaceAll("skromp", "friend");
+    console.log(input);
+
     // generate openAI completion
     const response = await openAI.createCompletion({
       model: "text-curie-001",
-      prompt: message.content,
+      prompt: input,
       temperature: 1,
       top_p: 0.9,
-      max_tokens: 80,
+      max_tokens: 50,
     });
     const text = response.data.choices[0].text;
     if (!text) {
       bot.logger.error("OpenAI returned empty response.");
       return;
     }
-    await message.channel.send(text);
+
+    // post-processing
+    let output: string = text;
+    output = output.split("\n").join(" ");
+
+    await message.channel.send(output);
   });
 };
