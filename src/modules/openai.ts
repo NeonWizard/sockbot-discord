@@ -39,6 +39,8 @@ export default (bot: Bot): void => {
 
     if (message.author.bot) return;
 
+    // TODO: Add conversation pretext, such as:
+    // "The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly."
     const context = [`${message.author.username}: ${message.content}`];
 
     if (message.type === MessageType.Default) {
@@ -71,7 +73,7 @@ export default (bot: Bot): void => {
     let input: string = context.join("\n");
 
     // query bot response
-    input += `\n${client.user.username}: `;
+    input += `\n${client.user.username}:`;
 
     bot.logger.debug(input);
     console.log(input); // REMOVE
@@ -84,6 +86,7 @@ export default (bot: Bot): void => {
       top_p: 0.9,
       max_tokens: 65,
       user: message.author.tag,
+      stop: "\n",
     });
     const text = response.data.choices[0].text;
     if (!text) {
