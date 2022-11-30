@@ -59,8 +59,6 @@ export default (bot: Bot): void => {
       return;
     }
 
-    console.log(context);
-
     if (cooldown > 0) {
       bot.logger.info(
         `Attempted OpenAI interaction but on cooldown. ${cooldown} seconds remaining.`
@@ -76,7 +74,6 @@ export default (bot: Bot): void => {
     input += `\n${client.user.username}:`;
 
     bot.logger.debug(input);
-    console.log(input); // REMOVE
 
     // -- generate openAI completion
     const response = await openAI.createCompletion({
