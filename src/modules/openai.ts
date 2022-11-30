@@ -35,11 +35,29 @@ export default (bot: Bot): void => {
   });
 
   client.on("messageCreate", async (message: Message) => {
-    if (message.type !== MessageType.Default && message.type !== MessageType.Reply) return;
     if (message.author.bot) return;
-    // if (message.author.id !== "193469296557424640") return;
     if (message.type !== MessageType.Reply && !message.content.toLowerCase().includes("skromp"))
       return;
+
+    const context = [`${message.author.username}: ${message.content}`];
+
+    if (message.type === MessageType.Default) {
+      if (!message.content.toLowerCase().includes("skromp")) return;
+    } else if (message.type === MessageType.Reply) {
+      let repliedTo = await message.fetchReference();
+      if (repliedTo.author.id !== bot.client.user?.id) return;
+      context.unshift(`${repliedTo.author.username}: ${repliedTo.content}`);
+
+      // build out reply chain context
+      while (repliedTo.type === MessageType.Reply) {
+        repliedTo = await repliedTo.fetchReference();
+        context.unshift(`${repliedTo.author.username}: ${repliedTo.content}`);
+      }
+    } else {
+      return;
+    }
+
+    console.log(context);
 
     if (cooldown > 0) {
       bot.logger.info(
@@ -49,21 +67,26 @@ export default (bot: Bot): void => {
     }
     cooldown = OPENAI_COOLDOWN;
 
-    // pre-processing input
-    let input: string = message.content;
-    if (!input.match(/.*[.,:!?]/)) {
-      input += ".";
-    }
-    input = input.replaceAll("skromp", "friend");
-    console.log(input);
+    // -- pre-processing input
+    let input: string = context.join("\n");
 
-    // generate openAI completion
+    // remove references to the name 'skromp'
+    input = input.replaceAll("skromp", "friend");
+
+    // query bot response
+    input += `\n${bot.client.user!.username}: `;
+
+    bot.logger.debug(input);
+    console.log(input); // REMOVE
+
+    // -- generate openAI completion
     const response = await openAI.createCompletion({
       model: "text-curie-001",
       prompt: input,
       temperature: 1,
       top_p: 0.9,
-      max_tokens: 50,
+      max_tokens: 65,
+      user: message.author.tag,
     });
     const text = response.data.choices[0].text;
     if (!text) {
@@ -71,10 +94,13 @@ export default (bot: Bot): void => {
       return;
     }
 
-    // post-processing
+    // -- post-processing
     let output: string = text;
-    output = output.split("\n").join(" ");
+    output = output
+      .split("\n")
+      .filter((x) => x)
+      .join(" ");
 
-    await message.channel.send(output);
+    await message.reply(output);
   });
 };
