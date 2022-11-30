@@ -83,7 +83,6 @@ export default (bot: Bot): void => {
       top_p: 0.9,
       max_tokens: 65,
       user: message.author.tag,
-      stop: "\n",
     });
     const text = response.data.choices[0].text;
     if (!text) {
@@ -93,10 +92,12 @@ export default (bot: Bot): void => {
 
     // -- post-processing
     let output: string = text;
-    output = output
-      .split("\n")
-      .filter((x) => x)
-      .join(" ");
+    output = output.split("\n").filter((x) => x && !/.*[^ ]: .*/.test(x))[0];
+
+    if (!output) {
+      bot.logger.error(`OpenAI response unusable. Not responding. Full output: ${text}`);
+      return;
+    }
 
     await message.reply(output);
   });
