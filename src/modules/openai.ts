@@ -35,17 +35,17 @@ export default (bot: Bot): void => {
   });
 
   client.on("messageCreate", async (message: Message) => {
+    if (!client.user || !client.application) return;
+
     if (message.author.bot) return;
-    if (message.type !== MessageType.Reply && !message.content.toLowerCase().includes("skromp"))
-      return;
 
     const context = [`${message.author.username}: ${message.content}`];
 
     if (message.type === MessageType.Default) {
-      if (!message.content.toLowerCase().includes("skromp")) return;
+      if (!message.content.toLowerCase().includes(client.user.username.toLowerCase())) return;
     } else if (message.type === MessageType.Reply) {
       let repliedTo = await message.fetchReference();
-      if (repliedTo.author.id !== bot.client.user?.id) return;
+      if (repliedTo.author.id !== client.user.id) return;
       context.unshift(`${repliedTo.author.username}: ${repliedTo.content}`);
 
       // build out reply chain context
@@ -70,11 +70,8 @@ export default (bot: Bot): void => {
     // -- pre-processing input
     let input: string = context.join("\n");
 
-    // remove references to the name 'skromp'
-    input = input.replaceAll("skromp", "friend");
-
     // query bot response
-    input += `\n${bot.client.user!.username}: `;
+    input += `\n${client.user.username}: `;
 
     bot.logger.debug(input);
     console.log(input); // REMOVE
