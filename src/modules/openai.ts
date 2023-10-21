@@ -39,8 +39,6 @@ export default (bot: Bot): void => {
 
     if (message.author.bot) return;
 
-    // TODO: Add conversation pretext, such as:
-    // "The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly."
     const context = [`${message.author.username}: ${message.content}`];
 
     if (message.type === MessageType.Default) {
@@ -68,12 +66,17 @@ export default (bot: Bot): void => {
     cooldown = OPENAI_COOLDOWN;
 
     // -- pre-processing input
+    const contextPrompt = `
+The following is a conversation between ${client.user.username.toLowerCase()} and multiple other users. ${client.user.username.toLowerCase()} types in all lowercase, not using punctuation frequently. His grammar is eccentric and he has a weird personality. He does not send emojis, and tries not to be too excessively friendly. ${client.user.username.toLowerCase()}'s intelligence is very low and reflects on how he talks. ${client.user.username.toLowerCase()} is NOT an AI assistant, and no reference to that nor GPT should be made during the conversation.
+`;
+    context.unshift(contextPrompt);
     let input: string = context.join("\n");
 
     // query bot response
     input += `\n${client.user.username}:`;
 
     bot.logger.debug(input);
+    bot.logger.info(input + "\n");
 
     // -- generate openAI completion
     const response = await openAI.createCompletion({
