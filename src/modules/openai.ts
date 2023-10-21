@@ -2,13 +2,14 @@ import { Message, MessageType } from "discord.js";
 import { Bot } from "src/bot";
 import { OPENAI_COOLDOWN } from "../constants";
 
-import { Configuration, OpenAIApi } from "openai";
+import OpenAI from "openai";
+import { ChatCompletionMessageParam } from "openai/resources";
 
 let cooldown = 0;
 
 export default (bot: Bot): void => {
   const client = bot.client;
-  let openAI: OpenAIApi;
+  let openAI: OpenAI;
 
   client.on("initialized", async () => {
     if (process.env.OPENAI_DISABLE === "true") {
@@ -22,10 +23,9 @@ export default (bot: Bot): void => {
     }
 
     // initialize openAI API
-    const configuration = new Configuration({
+    openAI = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
-    openAI = new OpenAIApi(configuration);
 
     // cooldown stuff
     cooldown = 0;
@@ -35,23 +35,34 @@ export default (bot: Bot): void => {
   });
 
   client.on("messageCreate", async (message: Message) => {
+    if (openAI === undefined) return;
     if (!client.user || !client.application) return;
 
     if (message.author.bot) return;
 
-    const context = [`${message.author.username}: ${message.content}`];
+    const context: ChatCompletionMessageParam[] = [
+      { content: message.content, role: "user", name: message.author.username },
+    ];
 
     if (message.type === MessageType.Default) {
       if (!message.content.toLowerCase().includes(client.user.username.toLowerCase())) return;
     } else if (message.type === MessageType.Reply) {
       let repliedTo = await message.fetchReference();
       if (repliedTo.author.id !== client.user.id) return;
-      context.unshift(`${repliedTo.author.username}: ${repliedTo.content}`);
+      context.unshift({
+        content: repliedTo.content,
+        role: repliedTo.author.bot ? "assistant" : "user",
+        name: repliedTo.author.username,
+      });
 
       // build out reply chain context
       while (repliedTo.type === MessageType.Reply) {
         repliedTo = await repliedTo.fetchReference();
-        context.unshift(`${repliedTo.author.username}: ${repliedTo.content}`);
+        context.unshift({
+          content: repliedTo.content,
+          role: repliedTo.author.bot ? "assistant" : "user",
+          name: repliedTo.author.username,
+        });
       }
     } else {
       return;
@@ -66,42 +77,28 @@ export default (bot: Bot): void => {
     cooldown = OPENAI_COOLDOWN;
 
     // -- pre-processing input
-    const contextPrompt = `
-The following is a conversation between ${client.user.username.toLowerCase()} and multiple other users. ${client.user.username.toLowerCase()} types in all lowercase, not using punctuation frequently. His grammar is eccentric and he has a weird personality. He does not send emojis, and tries not to be too excessively friendly. ${client.user.username.toLowerCase()}'s intelligence is very low and reflects on how he talks. ${client.user.username.toLowerCase()} is NOT an AI assistant, and no reference to that nor GPT should be made during the conversation.
-`;
+    const contextPrompt: ChatCompletionMessageParam = {
+      content: `The following is a conversation between ${client.user.username.toLowerCase()} and multiple other users. ${client.user.username.toLowerCase()} types in all lowercase, not using punctuation frequently. His grammar is eccentric and he has a weird personality. He does not send emojis, and tries not to be too excessively friendly. ${client.user.username.toLowerCase()}'s intelligence is very low and reflects on how he talks. ${client.user.username.toLowerCase()} is NOT an AI assistant, and no reference to that nor GPT should be made during the conversation.`,
+      role: "system",
+    };
     context.unshift(contextPrompt);
-    let input: string = context.join("\n");
-
-    // query bot response
-    input += `\n${client.user.username}:`;
-
-    bot.logger.debug(input);
-    bot.logger.info(input + "\n");
 
     // -- generate openAI completion
-    const response = await openAI.createCompletion({
-      model: "text-curie-001",
-      prompt: input,
-      temperature: 1,
-      top_p: 0.9,
-      max_tokens: 65,
-      user: message.author.tag,
+    bot.logger.debug(JSON.stringify(context));
+    const response = await openAI.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: context,
+      // temperature: 1,
+      // top_p: 0.9,
+      max_tokens: 150,
+      presence_penalty: 0.1,
     });
-    const text = response.data.choices[0].text;
+    const text = response.choices[0].message.content;
     if (!text) {
       bot.logger.error("OpenAI returned empty response.");
       return;
     }
 
-    // -- post-processing
-    let output: string = text;
-    output = output.split("\n").filter((x) => x && !/.*[^ ]: .*/.test(x))[0];
-
-    if (!output) {
-      bot.logger.error(`OpenAI response unusable. Not responding. Full output: ${text}`);
-      return;
-    }
-
-    await message.reply(output);
+    await message.reply(text);
   });
 };
