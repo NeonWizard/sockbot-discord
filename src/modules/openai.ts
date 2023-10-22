@@ -85,11 +85,12 @@ export default (bot: Bot): void => {
 
     // -- generate openAI completion
     bot.logger.debug(JSON.stringify(context));
+    // TODO: Add top_p and temperature to env variables
     const response = await openAI.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: "gpt-4",
       messages: context,
-      temperature: 2,
-      top_p: 0.9,
+      // temperature: 2,
+      // top_p: 0.9,
       max_tokens: 250,
       // presence_penalty: 0.1,
     });
