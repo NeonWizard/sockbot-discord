@@ -88,10 +88,10 @@ export default (bot: Bot): void => {
     const response = await openAI.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: context,
-      // temperature: 1,
-      // top_p: 0.9,
-      max_tokens: 150,
-      presence_penalty: 0.1,
+      temperature: 2,
+      top_p: 0.9,
+      max_tokens: 250,
+      // presence_penalty: 0.1,
     });
     const text = response.choices[0].message.content;
     if (!text) {
@@ -99,6 +99,16 @@ export default (bot: Bot): void => {
       return;
     }
 
-    await message.reply(text);
+    // -- post-processing output
+    const output = text
+      .split("\n")
+      .map((x) => x.match(/^(?:[^ :]*: )?(.+)$/)?.[1] ?? "")
+      .join("\n");
+    if (output === "") {
+      bot.logger.error(`OpenAI response unusable. Not responding. Full output: ${text}`);
+      return;
+    }
+
+    await message.reply(output);
   });
 };
