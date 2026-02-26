@@ -10,10 +10,13 @@ export const PayCommand: BotCommand = {
     .setName("pay")
     .setDescription("give someone some of urrrr sock points! :D")
     .addUserOption((option) =>
-      option.setName("victim").setDescription("the victim to pay money to! silly").setRequired(true)
+      option
+        .setName("victim")
+        .setDescription("the victim to pay money to! silly")
+        .setRequired(true),
     )
     .addIntegerOption((option) =>
-      option.setName("points").setDescription("amount of sooockpoints to send").setRequired(true)
+      option.setName("points").setDescription("amount of sooockpoints to send").setRequired(true),
     ),
 
   execute: async (bot: Bot, interaction: CommandInteraction) => {
@@ -40,7 +43,7 @@ export const PayCommand: BotCommand = {
     // make sure sender doesn't transfer debt
     if (pointsToTransfer <= 0) {
       await interaction.reply(
-        "do you actually think you're slick. did you think this would work, in your little fantasy world of yours? do you really think the concept of transferring debt would be something ALLOWED in sock kingdom?? REALLY?? take a good look in the mirror, freak. you make me sick"
+        "do you actually think you're slick. did you think this would work, in your little fantasy world of yours? do you really think the concept of transferring debt would be something ALLOWED in sock kingdom?? REALLY?? take a good look in the mirror, freak. you make me sick",
       );
       return;
     }
@@ -63,7 +66,7 @@ export const PayCommand: BotCommand = {
       .setColor(0x3dff87)
       .setTitle("Points transferred")
       .setDescription(
-        `You've transferred ${pointsToTransfer.toLocaleString()} sockpoints to <@${victimDJS.id}>.`
+        `You've transferred ${pointsToTransfer.toLocaleString()} sockpoints to <@${victimDJS.id}>.`,
       )
       .setFields({
         name: "New wallet balance",

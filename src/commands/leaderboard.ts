@@ -32,8 +32,8 @@ export const LeaderboardCommand: BotCommand = {
               name: `${AWARD_LEVELS[i]} ${discordUser.tag}`,
               value: `${(user.sockpoints + user.bankBalance).toLocaleString()} sockpoints`,
             };
-          })
-        )
+          }),
+        ),
       )
       .setFooter({ text: "get superior <3" })
       .setTimestamp();

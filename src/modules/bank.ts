@@ -22,7 +22,7 @@ export default (bot: Bot): void => {
           await user.save();
         }
       },
-      { timezone: "America/Los_Angeles" }
+      { timezone: "America/Los_Angeles" },
     );
   });
 };

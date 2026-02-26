@@ -54,6 +54,5 @@ export class Bot {
     this.client.user?.setPresence({
       activities: [{ name: `v${VERSION}` }],
     });
-    process.env.npm_package_version;
   }
 }

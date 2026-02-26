@@ -26,7 +26,7 @@ if (process.env.DICTIONARY_APP_ID == null || process.env.DICTIONARY_APP_KEY == n
       }),
       winston.format.errors({ stack: true }),
       winston.format.splat(),
-      winston.format.json()
+      winston.format.json(),
     ),
     // prettier-ignore
     transports: [

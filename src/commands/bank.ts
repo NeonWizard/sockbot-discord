@@ -12,19 +12,19 @@ export const BankCommand: BotCommand = {
         .setName("deposit")
         .setDescription("Deposit sockpoints")
         .addIntegerOption((option) =>
-          option.setName("points").setDescription("How many points to deposit.").setRequired(true)
-        )
+          option.setName("points").setDescription("How many points to deposit.").setRequired(true),
+        ),
     )
     .addSubcommand((subcommand) =>
       subcommand
         .setName("withdraw")
         .setDescription("Withdraw sockpoints")
         .addIntegerOption((option) =>
-          option.setName("points").setDescription("How many points to withdraw.").setRequired(true)
-        )
+          option.setName("points").setDescription("How many points to withdraw.").setRequired(true),
+        ),
     )
     .addSubcommand((subcommand) =>
-      subcommand.setName("balance").setDescription("Check bank balance")
+      subcommand.setName("balance").setDescription("Check bank balance"),
     ),
 
   execute: async (bot: Bot, interaction: CommandInteraction) => {
@@ -48,7 +48,7 @@ export const BankCommand: BotCommand = {
     if (interaction.options.getSubcommand() === "deposit") {
       if (amount > user.sockpoints) {
         await interaction.reply(
-          `you can't afford that, brokeass. you have ${user.sockpoints} in your wallet.`
+          `you can't afford that, brokeass. you have ${user.sockpoints} in your wallet.`,
         );
         return;
       }
@@ -68,7 +68,7 @@ export const BankCommand: BotCommand = {
           {
             name: "New wallet balance",
             value: `\`\`\`js\n${user.sockpoints.toLocaleString()} sockpoints\`\`\``,
-          }
+          },
         )
         .setFooter({ text: "get rich <3" })
         .setTimestamp();
@@ -97,7 +97,7 @@ export const BankCommand: BotCommand = {
           {
             name: "New wallet balance",
             value: `\`\`\`js\n${user.sockpoints.toLocaleString()} sockpoints\`\`\``,
-          }
+          },
         )
         .setFooter({ text: "get rich <3" })
         .setTimestamp();

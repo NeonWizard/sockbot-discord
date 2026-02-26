@@ -47,7 +47,7 @@ export const DoubleOrNothingCommand: BotCommand = {
           {
             name: "New balance",
             value: `\`\`\`js\n${user.sockpoints.toLocaleString()} sockpoints\`\`\``,
-          }
+          },
         )
         .setFooter({ text: "get rich <3" })
         .setTimestamp();
@@ -66,7 +66,7 @@ export const DoubleOrNothingCommand: BotCommand = {
       await userHistory.save();
 
       const attachment = new AttachmentBuilder(
-        path.join(__dirname, "../static/images/cry-man.gif")
+        path.join(__dirname, "../static/images/cry-man.gif"),
       );
       await interaction.reply({ files: [attachment] });
     }

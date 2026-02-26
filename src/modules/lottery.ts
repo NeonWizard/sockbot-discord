@@ -14,7 +14,7 @@ const PRIZE_POOL = constants.LOTTERY_PRIZE_POOL;
 const runLottery = async (bot: Bot, lottery: Lottery) => {
   // Fetch lottery channel
   const channel = await bot.client.channels.fetch(lottery.channelID);
-  if (channel === null || !channel.isTextBased()) {
+  if (channel === null || !channel.isTextBased() || !("send" in channel)) {
     bot.logger.error(`Could not fetch channel for lottery of ID [${lottery.id}]`);
     return;
   }
@@ -62,11 +62,11 @@ const runLottery = async (bot: Bot, lottery: Lottery) => {
     for (const [userID, winningTickets] of Object.entries(userWinningTickets)) {
       const user = (await User.findOneBy({ id: +userID }))!;
       const sortedWinningTickets = winningTickets.sort((ticket1, ticket2) =>
-        ticket1.matches > ticket2.matches ? -1 : 1
+        ticket1.matches > ticket2.matches ? -1 : 1,
       );
       const totalPoints = sortedWinningTickets.reduce(
         (acc, ticket) => acc + PRIZE_POOL[ticket.matches],
-        0
+        0,
       );
 
       const response = [];
@@ -82,7 +82,7 @@ const runLottery = async (bot: Bot, lottery: Lottery) => {
             PRIZE_POOL[sortedWinningTickets[0].matches].toLocaleString().length;
 
           const rewardString = `${points} sockpoints ${" ".repeat(
-            Math.max(0, maxPrizeTextSize - points.length)
+            Math.max(0, maxPrizeTextSize - points.length),
           )}`;
 
           response.push(`${rewardString} - ${ticket.stringLine}`);
@@ -128,11 +128,11 @@ export default (bot: Bot): void => {
       "40 19 * * *",
       () => {
         bot.logger.info(
-          "Pre-emptively restarting bot 20 minutes before lottery to reacquire websocket."
+          "Pre-emptively restarting bot 20 minutes before lottery to reacquire websocket.",
         );
         process.exit(0);
       },
-      { timezone: "America/Los_Angeles" }
+      { timezone: "America/Los_Angeles" },
     );
 
     // Handle lotteries at 8PM every day
@@ -149,7 +149,7 @@ export default (bot: Bot): void => {
           await runLottery(bot, lottery);
         }
       },
-      { timezone: "America/Los_Angeles" }
+      { timezone: "America/Los_Angeles" },
     );
   });
 };

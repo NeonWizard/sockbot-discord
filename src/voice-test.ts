@@ -1,4 +1,4 @@
-import { AttachmentBuilder, ChannelType, Client, GatewayIntentBits } from "discord.js";
+import { ChannelType, Client, GatewayIntentBits } from "discord.js";
 import { DiscordGatewayAdapterCreator, joinVoiceChannel } from "@discordjs/voice";
 import * as readline from "readline";
 import * as dotenv from "dotenv";
@@ -43,7 +43,7 @@ client.once("ready", async () => {
     await new Promise((res) =>
       rl.question("THing ?", (answer) => {
         res(answer);
-      })
+      }),
     );
 
     if (flag) {

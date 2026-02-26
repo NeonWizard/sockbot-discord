@@ -50,7 +50,7 @@ export const ShopCommand: BotCommand = {
       .setColor(0xcfcfcf)
       .setTitle("Sock Shop")
       .setDescription(
-        "Lamp oil? Rope? Bombs? You want it? It's yours my friend, as long as you have enough sockpoints."
+        "Lamp oil? Rope? Bombs? You want it? It's yours my friend, as long as you have enough sockpoints.",
       )
       .setFields(
         ITEMS.map((item) => {
@@ -61,7 +61,7 @@ export const ShopCommand: BotCommand = {
             }\n\`\`\`css\n${item.cost.toLocaleString()} sockpoints\n\`\`\``,
             inline: true,
           };
-        })
+        }),
       )
       .setFooter({ text: "get items <3" })
       .setTimestamp();
@@ -72,7 +72,7 @@ export const ShopCommand: BotCommand = {
           .setCustomId(item.id)
           .setLabel(item.name)
           .setStyle(ButtonStyle.Primary);
-      })
+      }),
     );
 
     await interaction.reply({ embeds: [embed], components: [row], allowedMentions: { users: [] } });

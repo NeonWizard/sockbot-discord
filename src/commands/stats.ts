@@ -133,7 +133,7 @@ export const StatsCommand: BotCommand = {
           `,
           inline: true,
         },
-        { name: "\u200b", value: "\u200b", inline: true }
+        { name: "\u200b", value: "\u200b", inline: true },
       )
       .setFooter({ text: "get informed <3" })
       .setTimestamp();

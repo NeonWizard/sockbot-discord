@@ -121,7 +121,7 @@ export const generateLotteryImage = async (latestNumber: number, previousNumbers
   const ctx = canvas.getContext("2d");
 
   const img = await Canvas.loadImage(
-    path.join(__dirname, "../static/images", "lottery pointing.png")
+    path.join(__dirname, "../static/images", "lottery pointing.png"),
   );
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -144,7 +144,7 @@ export const generateLotteryImage = async (latestNumber: number, previousNumbers
     ctx.fillText(
       previousNumber.toString(),
       198 + (index % 3) * 65,
-      268 + Math.floor(index / 3) * 65
+      268 + Math.floor(index / 3) * 65,
     );
   });
 
@@ -164,7 +164,7 @@ export const generateUniqueRandomArray = (min: number, max: number, length: numb
 // Creates a VerboseTicket from a LotteryTicket database entity
 export const createVerboseTicket = (
   ticket: LotteryTicket,
-  winningNumbers: Set<number>
+  winningNumbers: Set<number>,
 ): VerboseTicket => {
   const verboseNumbers = ticket.numbers.map((number) => ({
     number,
@@ -187,7 +187,7 @@ export const createVerboseTicket = (
 // Creates an array of VerboseTickets from an array of LotteryTicket database entities
 export const createVerboseTickets = (
   tickets: LotteryTicket[],
-  winningNumbers: Set<number>
+  winningNumbers: Set<number>,
 ): VerboseTicket[] => {
   return tickets.map((ticket) => createVerboseTicket(ticket, winningNumbers));
 };

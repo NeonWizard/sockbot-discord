@@ -12,7 +12,7 @@ import * as utils from "../utils";
 const testMessage = (
   message: Message,
   channel: ShiritoriChannel,
-  lastWord: KnownWord | null
+  lastWord: KnownWord | null,
 ): string | undefined => {
   const content = message.content.toLowerCase();
 
@@ -107,7 +107,7 @@ const handleMessageChange = async (
   channelID: string,
   userID: string | undefined,
   createdAt: Date,
-  deleted: boolean
+  deleted: boolean,
 ) => {
   // Find ShiritoriChannel in database
   const channelEnt = await ShiritoriChannel.findOneBy({
@@ -117,7 +117,7 @@ const handleMessageChange = async (
 
   // Fetch DiscordJS channel object
   const channel = await bot.client.channels.fetch(channelID);
-  if (channel === null || !channel.isTextBased()) {
+  if (channel === null || !channel.isTextBased() || !("send" in channel)) {
     bot.logger.error(`Could not fetch channel for shiritori channel of ID [${channelEnt.id}]`);
     return;
   }
@@ -125,7 +125,7 @@ const handleMessageChange = async (
   // Fetch user
   if (userID === undefined) {
     bot.logger.warn(
-      "Received message change event in shiritori with no author data attached. Ignoring."
+      "Received message change event in shiritori with no author data attached. Ignoring.",
     );
     await channel.send("don't edit or delete messages you little sluts. i'll getcha next time");
     return;
@@ -155,7 +155,7 @@ const handleMessageChange = async (
   const embed = createChainBrokenEmbed(
     `Chained word was ${deleted ? "deleted" : "edited"}.`,
     chainLength,
-    pointPenalty
+    pointPenalty,
   );
   await channel.send({ embeds: [embed] });
 };
@@ -175,7 +175,7 @@ export default (bot: Bot): void => {
       const createdAt = oldMessage.createdAt ?? newMessage.createdAt;
 
       handleMessageChange(bot, channelID, userID, createdAt, false);
-    }
+    },
   );
 
   // Prevent users from deleting messages

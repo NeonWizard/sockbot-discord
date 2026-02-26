@@ -35,7 +35,7 @@ for (let poolSize = 30; poolSize < 70; poolSize += 10) {
     const odds = getNp1(poolSize, 7, matches);
     lottoOdds[matches.toString()] = 1 / odds;
     console.log(
-      `${matches} matches - 1 in ${Math.round(odds)} chance (${((1 / odds) * 100).toFixed(5)}%)`
+      `${matches} matches - 1 in ${Math.round(odds)} chance (${((1 / odds) * 100).toFixed(5)}%)`,
     );
   }
   lotteries.push({ poolSize: poolSize, odds: lottoOdds });

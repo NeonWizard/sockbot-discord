@@ -31,12 +31,12 @@ const checkWSHealth = async (bot: Bot) => {
       // If check interval under a certain value (ping has been the same for a while), restart
       if (timeToNextCheck < 100) {
         bot.logger.error(
-          `Ping has remained the same for ${(STARTING_CHECK_TIME * 2) / 1000} seconds, restarting!`
+          `Ping has remained the same for ${(STARTING_CHECK_TIME * 2) / 1000} seconds, restarting!`,
         );
         process.exit(0);
       }
       bot.logger.warning(
-        "Amogus sus... ping remained the same as the last check. Checking again twice as soon."
+        "Amogus sus... ping remained the same as the last check. Checking again twice as soon.",
       );
     } else {
       timeToNextCheck = STARTING_CHECK_TIME;

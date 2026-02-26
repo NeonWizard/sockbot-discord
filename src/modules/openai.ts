@@ -18,7 +18,7 @@ const normalizeUsername = (username: string): string =>
 const buildContext = async (
   message: Message,
   selfID: string,
-  limit = 20
+  limit = 20,
 ): Promise<ChatCompletionMessageParam[]> => {
   const context: ChatCompletionMessageParam[] = [
     { content: message.content, role: "user", name: normalizeUsername(message.author.username) },
@@ -86,6 +86,7 @@ export default (bot: Bot): void => {
     // if (message.author.bot) return;
 
     if (message.channelId !== "1177076381230825595") return;
+    if (!("sendTyping" in message.channel) || !("send" in message.channel)) return;
 
     if (message.type !== MessageType.Default && message.type !== MessageType.Reply) return;
     // if (!message.content.toLowerCase().includes(client.user.username.toLowerCase())) return;
@@ -94,7 +95,7 @@ export default (bot: Bot): void => {
 
     if (cooldown > 0) {
       bot.logger.info(
-        `Attempted OpenAI interaction but on cooldown. ${cooldown} seconds remaining.`
+        `Attempted OpenAI interaction but on cooldown. ${cooldown} seconds remaining.`,
       );
 
       if (cooldown > 10000) {

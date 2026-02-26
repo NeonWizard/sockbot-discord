@@ -19,7 +19,7 @@ import * as utils from "../utils";
 const getLotteryInfo = async (interaction: ChatInputCommandInteraction) => {
   const response = [];
   response.push(
-    `The sock lottery is a powerball-style lottery that takes place once a week. Every day at 8PM Pacific, a number from 1 to ${LOTTERY_POOL_SIZE} is randomly drawn. At any point, you can purchase tickets for ${LOTTERY_TICKET_COST.toLocaleString()} sockpoints each, which will have a sequence of 7 randomly generated numbers. For each of these numbers that matches the drawn lottery numbers, you'll receive a prize!`
+    `The sock lottery is a powerball-style lottery that takes place once a week. Every day at 8PM Pacific, a number from 1 to ${LOTTERY_POOL_SIZE} is randomly drawn. At any point, you can purchase tickets for ${LOTTERY_TICKET_COST.toLocaleString()} sockpoints each, which will have a sequence of 7 randomly generated numbers. For each of these numbers that matches the drawn lottery numbers, you'll receive a prize!`,
   );
 
   response.push("");
@@ -36,7 +36,7 @@ const getLotteryInfo = async (interaction: ChatInputCommandInteraction) => {
 const listTickets = async (
   interaction: ChatInputCommandInteraction,
   lottery: Lottery,
-  user: User
+  user: User,
 ) => {
   const winningNumbersSet = new Set(lottery.winningNumbers);
   const userTickets = lottery.tickets.filter((ticket) => ticket.user.id === user.id);
@@ -83,7 +83,7 @@ const listTickets = async (
 const buyTickets = async (
   interaction: ChatInputCommandInteraction,
   lottery: Lottery,
-  user: User
+  user: User,
 ) => {
   // determine amount of tickets to purchase and total cost
   const amount = interaction.options.getInteger("amount", true);
@@ -96,7 +96,7 @@ const buyTickets = async (
   // user cost deduction
   if (cost > user.sockpoints) {
     await interaction.reply(
-      `you can't afford that, brokeass. that would cost ${cost} sockpoints and you only have ${user.sockpoints} in your wallet.`
+      `you can't afford that, brokeass. that would cost ${cost} sockpoints and you only have ${user.sockpoints} in your wallet.`,
     );
     return;
   }

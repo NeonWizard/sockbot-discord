@@ -19,7 +19,7 @@ if (process.env.DISCORD_TOKEN == null) {
   // whaaaaat
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { id: clientID }: { [key: string]: any } = (await rest.get(
-    Routes.oauth2CurrentApplication()
+    Routes.oauth2CurrentApplication(),
   )) as object;
 
   try {
