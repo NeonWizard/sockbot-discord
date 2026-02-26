@@ -48,12 +48,12 @@ if (process.env.DICTIONARY_APP_ID == null || process.env.DICTIONARY_APP_KEY == n
   logger.info("Bot is starting...");
 
   // -- Create TypeORM
-  try {
-    await PSQLSource.initialize();
-  } catch (err) {
-    logger.error("Error creating TypeORM DB link: " + err);
-    return;
-  }
+  // try {
+  //   await PSQLSource.initialize();
+  // } catch (err) {
+  //   logger.error("Error creating TypeORM DB link: " + err);
+  //   return;
+  // }
 
   // -- Create DiscordJS client
   const client = new Client({

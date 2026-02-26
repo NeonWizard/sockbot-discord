@@ -4,25 +4,51 @@ import { OPENAI_COOLDOWN } from "../constants";
 
 import OpenAI from "openai";
 import { ChatCompletionMessageParam } from "openai/resources";
+import { sleep } from "openai/core";
 
 const CONTEXT_PROMPT = `
 The following is a conversation between {username} and multiple other users. {username} types in all lowercase, not using punctuation frequently. His grammar is eccentric and he has a weird personality. He does not send emojis, and tries not to be too excessively friendly. {username}'s intelligence is very low and reflects on how he talks. {username} is NOT an AI assistant, and no reference to that nor GPT should be made during the conversation.
-
-Additionally, a user may request to perform an action. If you are certain a user has the intent of executing one of these commands, {username} should respond with [<COMMAND> <arg1> <arg2> <...>] instead of a normal response, where <COMMAND> is the exact name of the command to be ran and zero or more arguments are included after. Following this, {username} will be provided with the output of executing the command, and should respond to the original query using that output.
-
-Listed below are the available commands, each with a description of what it does.
-
-Commands:
-- doubleornothing: Has a 50% chance of either doubling the user's points, or losing all of their points. User should first be asked for confirmation before this is executed.
-- points: Displays how many points a user has.
-- bank balance: Displays how many points a user has stored in their bank.
-- pay <target username> <amount>: Pays the target person an amount of points from their own balance.
 `;
 
+// Ensures username adheres to OpenAI API requirements
+const normalizeUsername = (username: string): string =>
+  username.replace(/[^a-zA-Z0-9_-]/g, "").substring(0, 64);
+
 // Builds a context for a message from the previous {limit} messages.
-const buildContext = (message: Message, limit = 30): ChatCompletionMessageParam[] => {
-  const messages = message.channel.messages.fetch({ before: message.id, limit: limit });
-  return [];
+const buildContext = async (
+  message: Message,
+  selfID: string,
+  limit = 20
+): Promise<ChatCompletionMessageParam[]> => {
+  const context: ChatCompletionMessageParam[] = [
+    { content: message.content, role: "user", name: normalizeUsername(message.author.username) },
+  ];
+
+  const history = await message.channel.messages.fetch({ before: message.id, limit: limit });
+
+  for (const priorMessage of history.values()) {
+    context.unshift({
+      content: priorMessage.content,
+      role: priorMessage.author.id === selfID ? "assistant" : "user",
+      name: normalizeUsername(priorMessage.author.username),
+    });
+
+    if (priorMessage.type === MessageType.Reply) {
+      const repliedTo = await priorMessage.fetchReference();
+      context.unshift({
+        content: repliedTo.content,
+        role: repliedTo.author.id === selfID ? "assistant" : "user",
+        name: normalizeUsername(repliedTo.author.username),
+      });
+      // context.unshift({
+      //   content:
+      //     "The next message occurred further back in the chat history but was included here, since the message after it was replying to it.",
+      //   role: "system",
+      // });
+    }
+  }
+
+  return context;
 };
 
 export default (bot: Bot): void => {
@@ -56,45 +82,35 @@ export default (bot: Bot): void => {
   client.on("messageCreate", async (message: Message) => {
     if (openAI === undefined) return;
     if (!client.user || !client.application) return;
+    if (message.author.id === client.user.id) return;
+    // if (message.author.bot) return;
 
-    if (message.author.bot) return;
+    if (message.channelId !== "1177076381230825595") return;
 
-    const context: ChatCompletionMessageParam[] = [
-      { content: message.content, role: "user", name: message.author.username },
-    ];
+    if (message.type !== MessageType.Default && message.type !== MessageType.Reply) return;
+    // if (!message.content.toLowerCase().includes(client.user.username.toLowerCase())) return;
 
-    if (message.type === MessageType.Default) {
-      if (!message.content.toLowerCase().includes(client.user.username.toLowerCase())) return;
-      context.unshift(...buildContext(message));
-    } else if (message.type === MessageType.Reply) {
-      let repliedTo = await message.fetchReference();
-      if (repliedTo.author.id !== client.user.id) return;
-      context.unshift({
-        content: repliedTo.content,
-        role: repliedTo.author.bot ? "assistant" : "user",
-        name: repliedTo.author.username,
-      });
-
-      // build out reply chain context
-      while (repliedTo.type === MessageType.Reply) {
-        repliedTo = await repliedTo.fetchReference();
-        context.unshift({
-          content: repliedTo.content,
-          role: repliedTo.author.bot ? "assistant" : "user",
-          name: repliedTo.author.username,
-        });
-      }
-    } else {
-      return;
-    }
+    const context = await buildContext(message, client.user.id);
 
     if (cooldown > 0) {
       bot.logger.info(
         `Attempted OpenAI interaction but on cooldown. ${cooldown} seconds remaining.`
       );
-      return;
+
+      if (cooldown > 10000) {
+        return;
+      }
+
+      await message.channel.sendTyping();
+
+      const sleepTime = cooldown * 1000;
+      cooldown += OPENAI_COOLDOWN;
+      await sleep(sleepTime);
+    } else {
+      cooldown = OPENAI_COOLDOWN;
     }
-    cooldown = OPENAI_COOLDOWN;
+
+    await message.channel.sendTyping();
 
     // -- pre-processing input
     const contextPrompt: ChatCompletionMessageParam = {
@@ -130,6 +146,11 @@ export default (bot: Bot): void => {
       return;
     }
 
-    await message.reply(output);
+    const latestMessage = (await message.channel.messages.fetch({ limit: 1 })).first();
+    if (latestMessage?.id === message.id) {
+      await message.channel.send(output);
+    } else {
+      await message.reply(output);
+    }
   });
 };
