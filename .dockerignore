@@ -7,7 +7,7 @@ dist/
 *.md
 .gitignore
 .dockerignore
-.eslintrc.json
+eslint.config.*
 .prettierrc
 docker-compose.yml
 *.log
