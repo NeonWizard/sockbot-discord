@@ -6,15 +6,15 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 // Validate environment variables
-if (process.env.DISCORD_TOKEN == null) {
+const discordToken = process.env.DISCORD_TOKEN;
+if (discordToken == null) {
   throw new Error("Environment variable 'DISCORD_TOKEN' is missing.");
 }
 
 (async () => {
   const commandBuilders = commands.map((command) => command.builder.toJSON());
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN!);
+  const rest = new REST({ version: "10" }).setToken(discordToken);
 
   // whaaaaat
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -1,4 +1,4 @@
-import cron from "node-cron";
+// import cron from "node-cron";
 import { Lottery } from "../database/models/Lottery";
 import * as utils from "../utils";
 import * as constants from "../constants";
@@ -11,6 +11,7 @@ import { VerboseTicket } from "../interfaces/tickets";
 
 const PRIZE_POOL = constants.LOTTERY_PRIZE_POOL;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const runLottery = async (bot: Bot, lottery: Lottery) => {
   // Fetch lottery channel
   const channel = await bot.client.channels.fetch(lottery.channelID);
@@ -134,14 +135,12 @@ export default (bot: Bot): void => {
     //   },
     //   { timezone: "America/Los_Angeles" },
     // );
-
     // Handle lotteries at 8PM every day
     // cron.schedule(
     //   "0 20 * * *",
     //   // "*/10 * * * * *", // for testing
     //   async () => {
     //     bot.logger.info("Generating daily lottery numbers.");
-
     //     // Run all lotteries
     //     const lotteries = await Lottery.find({ relations: { tickets: true } });
     //     for (const lottery of lotteries) {
