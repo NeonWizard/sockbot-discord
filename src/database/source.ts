@@ -10,11 +10,11 @@ if (process.env.DB_USER == null || process.env.DB_PASSWORD == null) {
 
 export const PSQLSource = new DataSource({
   type: "postgres",
-  host: "localhost",
-  port: 5432,
+  host: process.env.DB_HOST || "localhost",
+  port: parseInt(process.env.DB_PORT || "5432", 10),
   username: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
-  database: "sockbot",
+  database: process.env.DB_NAME || "sockbot",
   synchronize: false,
   logging: false,
   entities: [join(__dirname, "**/models/*.{ts,js}")],
