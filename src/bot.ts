@@ -13,12 +13,19 @@ export class Bot {
   public readonly logger: Logger;
   public readonly db: DataSource;
   public readonly commands: Collection<string, BotCommand>;
+  public readonly testGuildId: string | undefined;
 
   constructor(client: Client, dbSource: DataSource, logger: Logger) {
     this.client = client;
     this.db = dbSource;
     this.logger = logger;
     this.commands = new Collection();
+    this.testGuildId = process.env.TEST_GUILD_ID;
+  }
+
+  public isAllowedGuild(guildId: string | null): boolean {
+    if (!this.testGuildId) return true; // No restriction if TEST_GUILD_ID not set
+    return guildId === this.testGuildId;
   }
 
   public async initialize(): Promise<void> {

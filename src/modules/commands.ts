@@ -6,6 +6,12 @@ export default (bot: Bot): void => {
   client.on("interactionCreate", async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
 
+    // Guild restriction for testing
+    if (!bot.isAllowedGuild(interaction.guildId)) {
+      bot.logger.info(`Ignored command from non-test guild: ${interaction.guildId}`);
+      return;
+    }
+
     const command = bot.commands.get(interaction.commandName);
 
     if (command === undefined) {

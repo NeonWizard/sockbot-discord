@@ -183,6 +183,9 @@ export default (bot: Bot): void => {
     // Bots can't participate in Shiritori. T-T
     if (message.author?.bot) return;
 
+    // Guild restriction for testing
+    if (!bot.isAllowedGuild(message.guildId)) return;
+
     const channelID = message.channel.id;
     const userID = message.author?.id;
     const createdAt = message.createdAt;
@@ -193,6 +196,9 @@ export default (bot: Bot): void => {
   client.on("messageCreate", async (message: Message) => {
     // Bots can't participate in Shiritori. T-T
     if (message.author.bot) return;
+
+    // Guild restriction for testing
+    if (!bot.isAllowedGuild(message.guildId)) return;
 
     // Find ShiritoriChannel in database
     const channel = await ShiritoriChannel.findOneBy({

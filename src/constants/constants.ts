@@ -2,4 +2,4 @@ export const LOTTERY_TICKET_COST = 100;
 export const LOTTERY_POOL_SIZE = 50;
 export const LOTTERY_PRIZE_POOL = [0, 10, 150, 1000, 5000, 12000, 50000, 1000000];
 
-export const OPENAI_COOLDOWN = 5;
+export const OPENAI_COOLDOWN = 10;

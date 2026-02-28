@@ -25,11 +25,19 @@ if (process.env.DISCORD_TOKEN == null) {
   try {
     console.log("Started refreshing application (/) commands.");
 
-    await rest.put(Routes.applicationCommands(clientID), {
-      body: commandBuilders,
-    });
-
-    console.log("Successfully reloaded application (/) commands.");
+    // For testing: deploy to specific guild for instant updates
+    if (process.env.TEST_GUILD_ID) {
+      console.log(`Deploying to test guild: ${process.env.TEST_GUILD_ID}`);
+      await rest.put(Routes.applicationGuildCommands(clientID, process.env.TEST_GUILD_ID), {
+        body: commandBuilders,
+      });
+      console.log("Successfully deployed commands to test guild.");
+    } else {
+      await rest.put(Routes.applicationCommands(clientID), {
+        body: commandBuilders,
+      });
+      console.log("Successfully reloaded global application (/) commands.");
+    }
   } catch (error) {
     console.error(error);
   }

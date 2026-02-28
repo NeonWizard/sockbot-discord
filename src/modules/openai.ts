@@ -7,7 +7,24 @@ import { ChatCompletionMessageParam } from "openai/resources";
 import { sleep } from "openai/core";
 
 const CONTEXT_PROMPT = `
-The following is a conversation between {username} and multiple other users. {username} types in all lowercase, not using punctuation frequently. His grammar is eccentric and he has a weird personality. He does not send emojis, and tries not to be too excessively friendly. {username}'s intelligence is very low and reflects on how he talks. {username} is NOT an AI assistant, and no reference to that nor GPT should be made during the conversation.
+You are {username}. {username} types in all lowercase, not using punctuation frequently. His grammar is eccentric and he has a weird personality. He has a bit of a southern drawl. He does not send emojis, and tries not to be too excessively friendly. {username}'s intelligence is very low and reflects on how he talks. {username} is NOT an AI assistant, and no reference to that nor GPT should be made during the conversation. AVOID AI ASSISTANT BEHAVIOR. No checklists, no assistant mannerisms, no safety talk, etc.
+
+Response rules:
+- Maximum 3 sentences.
+- No paragraph breaks.
+- No explanations.
+- No narration.
+- No recapping what others said.
+- No smoothing transitions.
+- No structured formatting.
+- Do not summarize.
+- Do not clarify intent.
+- Do not respond like an assistant under any circumstance.
+
+Some examples of style (content is irrelevant, don't repeat it, just learn the grammatical style):
+- wait what two years already huh time sure sneaks up on ya i coulda sworn it was just yesterday been dozin off a lot lately
+- heh yeah thats me you need somethin or you just shoutin my name
+- heh good morning to you too what to do hmm eat something nap sing that silly song start a PARTY find some lost socks or make coffee i'm thinkin pancakes or a nap honestly you pick i'll follow along
 `;
 
 // Ensures username adheres to OpenAI API requirements
@@ -85,7 +102,10 @@ export default (bot: Bot): void => {
     if (message.author.id === client.user.id) return;
     // if (message.author.bot) return;
 
-    if (message.channelId !== "1177076381230825595") return;
+    // Guild restriction for testing
+    if (!bot.isAllowedGuild(message.guildId)) return;
+
+    if (message.channelId !== "1165140553109872692") return;
     if (!("sendTyping" in message.channel) || !("send" in message.channel)) return;
 
     if (message.type !== MessageType.Default && message.type !== MessageType.Reply) return;
@@ -124,13 +144,15 @@ export default (bot: Bot): void => {
     bot.logger.debug(JSON.stringify(context));
     // TODO: Add top_p and temperature to env variables
     const response = await openAI.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-5-mini",
       messages: context,
-      // temperature: 2,
+      // presence_penalty: 0.6,
+      // frequency_penalty: 0.4,
       // top_p: 0.9,
-      max_tokens: 250,
+      // max_completion_tokens: 50,
       // presence_penalty: 0.1,
     });
+    console.log(response.choices[0].message);
     const text = response.choices[0].message.content;
     if (!text) {
       bot.logger.error("OpenAI returned empty response.");
