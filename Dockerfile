@@ -26,6 +26,9 @@ COPY tsconfig.json ./
 COPY src/ ./src/
 RUN yarn build
 
+# Remove devDependencies to reduce final image size
+RUN yarn install --production --frozen-lockfile --ignore-scripts
+
 # Production stage
 FROM node:lts-alpine
 
@@ -43,9 +46,11 @@ RUN apk add --no-cache \
       libjpeg-turbo \
       freetype
 
-# Copy package files and install production dependencies only
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile --production
+# Copy package.json for runtime
+COPY package.json ./
+
+# Copy node_modules from builder (already compiled with native deps)
+COPY --from=builder /usr/src/bot/node_modules ./node_modules
 
 # Copy built application from builder stage
 COPY --from=builder /usr/src/bot/dist ./dist
