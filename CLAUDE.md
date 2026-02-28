@@ -138,7 +138,7 @@ Optional:
 
 ## Production Deployment
 
-Docker image is automatically built and pushed to Docker Hub on pushes to main or version tags. The image:
+Docker image is automatically built and pushed to GitHub Container Registry (ghcr.io) on pushes to main or version tags. The image:
 
 - Uses `node:lts-alpine` base
 - Installs canvas dependencies (cairo, pango, etc.)

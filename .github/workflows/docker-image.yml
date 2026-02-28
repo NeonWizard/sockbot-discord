@@ -1,4 +1,4 @@
-name: Test, build and publish application to Docker Hub
+name: Test, build and publish application to GitHub Container Registry
 
 on:
   workflow_dispatch:
@@ -12,7 +12,8 @@ on:
       - main
 
 env:
-  DOCKER_URL: hub.docker.com/repository/docker/averagewizard13/sockbot-discord
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   test:
@@ -21,15 +22,16 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.JS
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 20
+          cache: 'yarn'
 
       - name: Install yarn dependencies
-        run: yarn install
+        run: yarn install --frozen-lockfile
 
       - name: Check ESLint
         run: yarn lint
@@ -38,42 +40,75 @@ jobs:
         run: yarn fmt:check
 
   build:
-    name: Build Docker image
+    name: Build and push Docker image
     runs-on: ubuntu-latest
+    needs: test
+    # Only push to GHCR on main branch or version tags
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           # For tags to be fetched
           fetch-depth: 0
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v3
 
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v4
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
-          images: averagewizard13/sockbot-discord
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{raw}}
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=raw,value=latest,enable={{is_default_branch}}
 
-      - name: Login to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build and push the Docker image
-        uses: docker/build-push-action@v2
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
         with:
           push: true
           context: .
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  build-pr:
+    name: Build Docker image (PR test)
+    runs-on: ubuntu-latest
+    needs: test
+    # Only build (not push) on PRs
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build the Docker image (no push)
+        uses: docker/build-push-action@v6
+        with:
+          push: false
+          context: .
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   deploy:
     name: Deploy Docker image
@@ -85,4 +120,4 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4

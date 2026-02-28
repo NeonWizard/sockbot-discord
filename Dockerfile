@@ -1,15 +1,9 @@
-FROM node:lts-alpine
+# Build stage
+FROM node:lts-alpine AS builder
 
 WORKDIR /usr/src/bot
 
-# # .npm-deps https://github.com/Automattic/node-canvas/issues/866
-# RUN apk add --no-cache --virtual .health-check curl \
-# 	&& apk add --no-cache --virtual .build-deps git build-base g++ \
-# 	&& apk add --no-cache --virtual .npm-deps cairo-dev libjpeg-turbo-dev pango
-
-COPY package.json yarn.lock ./
-# RUN yarn install && apk del .build-deps
-
+# Install build dependencies for canvas
 RUN apk add --no-cache --virtual build-deps \
       g++ \
       build-base \
@@ -21,10 +15,24 @@ RUN apk add --no-cache --virtual build-deps \
       pixman-dev \
       pangomm-dev \
       libjpeg-turbo-dev \
-      freetype-dev \
-    && yarn install \
-    && apk del build-deps \
-    && apk add --no-cache \
+      freetype-dev
+
+# Copy package files and install dependencies
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
+
+# Copy source code and build
+COPY tsconfig.json ./
+COPY src/ ./src/
+RUN yarn build
+
+# Production stage
+FROM node:lts-alpine
+
+WORKDIR /usr/src/bot
+
+# Install runtime dependencies for canvas
+RUN apk add --no-cache \
       cairo \
       jpeg \
       pango \
@@ -35,8 +43,14 @@ RUN apk add --no-cache --virtual build-deps \
       libjpeg-turbo \
       freetype
 
-# TODO: Only copy src/
-COPY . .
-RUN yarn build
+# Copy package files and install production dependencies only
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile --production
+
+# Copy built application from builder stage
+COPY --from=builder /usr/src/bot/dist ./dist
+
+# Set NODE_ENV to production
+ENV NODE_ENV=production
 
 CMD [ "node", "dist/index.js" ]
