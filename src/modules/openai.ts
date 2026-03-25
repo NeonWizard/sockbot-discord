@@ -105,7 +105,9 @@ export default (bot: Bot): void => {
     // Guild restriction for testing
     if (!bot.isAllowedGuild(message.guildId)) return;
 
-    if (message.channelId !== "1165140553109872692") return;
+    const isDedicatedChannel = message.channelId === "1165140553109872692";
+    const hasTriggerWord = message.content.toLowerCase().includes("skromp");
+    if (!isDedicatedChannel && !hasTriggerWord) return;
     if (!("sendTyping" in message.channel) || !("send" in message.channel)) return;
 
     if (message.type !== MessageType.Default && message.type !== MessageType.Reply) return;
